@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // TAMBAHKAN INI: Agar role bisa disimpan di database
     ];
 
     /**
@@ -45,5 +46,14 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Helper Method: Memudahkan pengecekan role di Controller atau Blade
+     * Contoh penggunaan: if(auth()->user()->isAdmin())
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
     }
 }
