@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -12,7 +14,6 @@ class AuthController extends Controller
      */
     public function login()
     {
-        // Jika user sudah login, langsung lempar ke dashboard
         if (Auth::check()) {
             return redirect()->route('admin.dashboard');
         }
@@ -24,7 +25,6 @@ class AuthController extends Controller
      */
     public function authenticate(Request $request)
     {
-        // Validasi input
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -34,19 +34,80 @@ class AuthController extends Controller
             'password.required' => 'Password wajib diisi.',
         ]);
 
-        // Coba login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // intended() akan mengembalikan user ke halaman yang tadinya ingin diakses
             return redirect()->intended('admin/dashboard')
                 ->with('success', 'Selamat datang kembali!');
         }
 
-        // Jika gagal, kembali ke login dengan pesan error
         return back()->withErrors([
             'email' => 'Email atau password yang Anda masukkan salah.',
         ])->onlyInput('email');
+    }
+
+    /**
+     * TAMPILKAN HALAMAN LUPA PASSWORD
+     */
+    public function forgotPassword()
+    {
+        return view('auth.forgot-password');
+    }
+
+    /**
+     * PROSES KIRIM LINK RESET (Sekaligus Redirect ke Form Reset)
+     */
+    public function sendResetLink(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.required' => 'Masukkan email Anda.',
+            'email.email' => 'Format email tidak valid.',
+            'email.exists' => 'Email tidak terdaftar dalam sistem.'
+        ]);
+
+        // Buat token simulasi sederhana
+        $token = bin2hex(random_bytes(20));
+
+        // LANGSUNG ARAHKAN ke halaman input password baru agar user tidak bingung
+        return redirect()->route('password.reset', ['token' => $token])
+            ->with([
+                'success' => 'Email terverifikasi. Silakan masukkan password baru Anda.',
+                'email' => $request->email // Mengirim email ke halaman berikutnya agar user tidak perlu ngetik ulang
+            ]);
+    }
+
+    /**
+     * 1. TAMPILKAN FORM INPUT PASSWORD BARU
+     */
+    public function resetPasswordForm($token)
+    {
+        return view('auth.reset-password', ['token' => $token]);
+    }
+
+    /**
+     * 2. PROSES UPDATE PASSWORD KE DATABASE
+     */
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|min:8|confirmed',
+        ], [
+            'email.exists' => 'Email tidak ditemukan.',
+            'password.required' => 'Password baru wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.'
+        ]);
+
+        // Cari user berdasarkan email dan update passwordnya
+        $user = User::where('email', $request->email)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Setelah berhasil, lempar kembali ke LOGIN
+        return redirect()->route('login')->with('success', 'Password berhasil diubah. Silakan login dengan password baru.');
     }
 
     /**
@@ -55,8 +116,6 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-
-        // Menghapus session agar aman
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

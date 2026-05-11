@@ -10,17 +10,27 @@ use App\Http\Controllers\AuthController;
 |--------------------------------------------------------------------------
 */
 
-// Halaman Utama dialihkan ke login jika ingin sistem tertutup
+// Halaman Utama dialihkan ke login
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
 /**
- * Rute Autentikasi (Login & Logout)
+ * Rute Autentikasi (Login, Logout, & Lupa Password)
  */
+// Login & Logout
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate']);
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Fitur Lupa Password
+Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+
+// --- TAMBAHKAN DUA BARIS INI ---
+// Rute untuk menampilkan form input password baru dan memprosesnya
+Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'updatePassword'])->name('password.update');
 
 
 /**
