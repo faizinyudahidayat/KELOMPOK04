@@ -146,7 +146,7 @@
                     </div>
 
                     <div class="text-center mb-4">
-                        <h3 class="fw-bold m-0">Welcome Back</h3>
+                        <h3 class="fw-bold m-0">INVENTARIS</h3>
                         <p class="text-muted small mt-1">Sistem Inventaris Kelompok 04</p>
                     </div>
 
@@ -187,7 +187,7 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 shadow">
-                            SIGN IN SYSTEM <i class="bi bi-arrow-right ms-2"></i>
+                            SUBMIT<i class="bi bi-arrow-right ms-2"></i>
                         </button>
                     </form>
 
