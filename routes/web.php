@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\KaryawanController; // Tambahkan controller baru ini
+use App\Http\Controllers\KaryawanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,8 +45,9 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/barang/{id}/update', [AdminController::class, 'barang_update'])->name('admin.barang.update');
     Route::delete('/barang/{id}/delete', [AdminController::class, 'barang_destroy'])->name('admin.barang.destroy');
 
-    // Manajemen Kategori
+    // Manajemen Kategori (SUDAH DIPERBAIKI)
     Route::get('/category', [AdminController::class, 'category_index'])->name('admin.category.index');
+    Route::post('/category/store', [AdminController::class, 'category_store'])->name('admin.category.store'); // 👈 KUNCI UTAMA: Penyelamat Tombol Tambah Kategori
     Route::get('/category/{id}/edit', [AdminController::class, 'category_edit'])->name('admin.category.edit');
     Route::put('/category/{id}/update', [AdminController::class, 'category_update'])->name('admin.category.update');
     Route::delete('/category/{id}/delete', [AdminController::class, 'category_destroy'])->name('admin.category.destroy');

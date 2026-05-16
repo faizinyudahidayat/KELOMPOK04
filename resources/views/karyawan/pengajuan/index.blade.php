@@ -13,7 +13,7 @@
             --accent-color: #3b82f6;
             --bg-dark: #0f172a;
             --card-bg: rgba(30, 41, 59, 0.7);
-            --sidebar-bg: rgba(15, 23, 42, 0.9);
+            --sidebar-bg: rgba(15, 23, 42, 0.95);
         }
 
         body {
@@ -22,6 +22,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
             display: flex;
+            overflow-x: hidden;
         }
 
         /* Sidebar Styling */
@@ -33,7 +34,8 @@
             padding: 2rem 1.5rem;
             position: fixed;
             height: 100vh;
-            z-index: 100;
+            z-index: 1000;
+            transition: transform 0.3s ease-in-out;
         }
 
         .nav-link {
@@ -57,8 +59,9 @@
         /* Main Content Styling */
         .main-content {
             margin-left: 280px;
-            width: 100%;
+            width: calc(100% - 280px);
             padding: 3rem;
+            transition: all 0.3s ease-in-out;
         }
 
         .stat-card {
@@ -110,6 +113,35 @@
             letter-spacing: 0.5px;
         }
 
+        /* Tombol Toggle Menu Mobile */
+        .mobile-header {
+            display: none;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Aturan Responsif Mobile (HP & Tablet) */
+        @media (max-width: 991.98px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1.5rem;
+            }
+            .mobile-header {
+                display: flex !important;
+            }
+        }
+
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -119,12 +151,29 @@
 </head>
 <body>
 
-    <div class="sidebar d-flex flex-column">
-        <div class="d-flex align-items-center mb-5 px-2">
-            <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
-                <i class="bi bi-box-seam-fill text-primary fs-4"></i>
+    <div class="mobile-header w-100 px-4 py-3 align-items-center justify-content-between d-lg-none">
+        <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-2">
+                <i class="bi bi-box-seam-fill text-primary fs-5"></i>
             </div>
-            <h4 class="fw-bold m-0">INV-UNIBA</h4>
+            <span class="fw-bold tracking-wide">INV-UNIBA</span>
+        </div>
+        <button class="btn text-white p-0" id="mobileMenuToggle">
+            <i class="bi bi-list fs-2 text-primary"></i>
+        </button>
+    </div>
+
+    <div class="sidebar d-flex flex-column" id="sidebarContainer">
+        <div class="d-flex align-items-center justify-content-between mb-5 px-2">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                    <i class="bi bi-box-seam-fill text-primary fs-4"></i>
+                </div>
+                <h4 class="fw-bold m-0">INV-UNIBA</h4>
+            </div>
+            <button class="btn text-white d-lg-none p-0" id="mobileMenuClose">
+                <i class="bi bi-x-lg fs-4"></i>
+            </button>
         </div>
 
         <a href="{{ route('karyawan.dashboard') }}" class="nav-link">
@@ -148,12 +197,12 @@
     <div class="main-content">
         <div class="container-fluid">
 
-            <div class="d-flex justify-content-between align-items-end mb-4">
+            <div class="d-flex justify-content-between align-items-sm-end flex-column flex-sm-row gap-3 mb-4">
                 <div>
                     <h2 class="fw-bold m-0">Riwayat Pengajuan</h2>
                     <p class="text-muted small mb-0">Pantau status permohonan inventaris Anda di sini.</p>
                 </div>
-                <a href="{{ route('karyawan.pengajuan.create') }}" class="btn btn-primary">
+                <a href="{{ route('karyawan.pengajuan.create') }}" class="btn btn-primary align-self-start align-self-sm-auto">
                     <i class="bi bi-plus-lg me-2"></i> Buat Pengajuan
                 </a>
             </div>
@@ -183,7 +232,7 @@
                                         <div class="bg-white bg-opacity-5 p-2 rounded-3 me-3 text-info">
                                             <i class="bi bi-box"></i>
                                         </div>
-                                        <span class="fw-semibold">{{ $p->barang->nama_barang }}</span>
+                                        <span class="fw-semibold">{{ $p->barang->nama_barang ?? 'Barang Tidak Ditemukan' }}</span>
                                     </div>
                                 </td>
                                 <td class="text-center fw-bold">{{ $p->jumlah }}</td>
@@ -203,8 +252,8 @@
                                     @endif
                                 </td>
                                 <td class="text-muted small">
-                                    {{ $p->created_at->format('d M Y') }}
-                                    <div class="text-muted" style="font-size: 0.65rem;">{{ $p->created_at->format('H:i') }} WIB</div>
+                                    {{ $p->created_at ? $p->created_at->format('d M Y') : '-' }}
+                                    <div class="text-white-50" style="font-size: 0.65rem;">{{ $p->created_at ? $p->created_at->format('H:i') : '--:--' }} WIB</div>
                                 </td>
                             </tr>
                             @empty
@@ -228,5 +277,23 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Logika Pengendali Buka/Tutup Navigasi Sidebar di Layar HP
+        const menuToggle = document.getElementById('mobileMenuToggle');
+        const menuClose = document.getElementById('mobileMenuClose');
+        const sidebarContainer = document.getElementById('sidebarContainer');
+
+        if (menuToggle && sidebarContainer) {
+            menuToggle.addEventListener('click', () => {
+                sidebarContainer.classList.add('show');
+            });
+        }
+
+        if (menuClose && sidebarContainer) {
+            menuClose.addEventListener('click', () => {
+                sidebarContainer.classList.remove('show');
+            });
+        }
+    </script>
 </body>
 </html>

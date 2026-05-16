@@ -15,7 +15,17 @@ class AuthController extends Controller
     public function login()
     {
         if (Auth::check()) {
-            return redirect()->route('admin.dashboard');
+            // Mengunci pengalihan ke rute yang pas jika user terlanjur login
+            $user = Auth::user();
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            } elseif ($user->role === 'karyawan') {
+                return redirect()->route('karyawan.dashboard');
+            } elseif ($user->role === 'kepala_umum') {
+                return redirect()->route('kepala_umum.dashboard');
+            } elseif ($user->role === 'keuangan') {
+                return redirect()->route('keuangan.dashboard');
+            }
         }
         return view('auth.login');
     }
@@ -37,8 +47,25 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('admin/dashboard')
-                ->with('success', 'Selamat datang kembali!');
+            $user = Auth::user();
+
+            // SOLUSI UTAMA: Menggunakan redirect()->route() agar tidak terjebak memori 'intended' rute sebelumnya
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard')
+                    ->with('success', 'Selamat datang kembali, Admin!');
+            } elseif ($user->role === 'karyawan') {
+                return redirect()->route('karyawan.dashboard')
+                    ->with('success', 'Selamat datang kembali!');
+            } elseif ($user->role === 'kepala_umum') {
+                return redirect()->route('kepala_umum.dashboard')
+                    ->with('success', 'Selamat datang Kepala Umum!');
+            } elseif ($user->role === 'keuangan') {
+                return redirect()->route('keuangan.dashboard')
+                    ->with('success', 'Selamat datang Keuangan!');
+            }
+
+            // Jalur alternatif jika role tidak dikenali sistem
+            return redirect('/');
         }
 
         return back()->withErrors([

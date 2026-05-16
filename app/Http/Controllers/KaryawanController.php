@@ -11,6 +11,7 @@ class KaryawanController extends Controller
 {
     /**
      * Tampilan Dashboard Karyawan
+     * Menampilkan statistik pengajuan milik user yang sedang login.
      */
     public function index()
     {
@@ -26,7 +27,7 @@ class KaryawanController extends Controller
      */
     public function pengajuan_index()
     {
-        // Mengambil data pengajuan beserta relasi barangnya
+        // Mengambil data pengajuan beserta relasi barangnya dengan Eager Loading
         $pengajuans = Pengajuan::with('barang')
                         ->where('user_id', Auth::id())
                         ->latest()
@@ -40,7 +41,8 @@ class KaryawanController extends Controller
      */
     public function pengajuan_create()
     {
-        $barangs = Barang::where('stok', '>', 0)->get(); // Hanya tampilkan barang yang stoknya ada
+        // Mengambil barang yang stoknya masih tersedia untuk dipilih
+        $barangs = Barang::where('stok', '>', 0)->get();
         return view('karyawan.pengajuan.create', compact('barangs'));
     }
 
@@ -49,6 +51,7 @@ class KaryawanController extends Controller
      */
     public function pengajuan_store(Request $request)
     {
+        // Validasi input dengan pesan kustom
         $request->validate([
             'barang_id' => 'required|exists:barangs,id',
             'jumlah' => 'required|numeric|min:1',
@@ -59,12 +62,13 @@ class KaryawanController extends Controller
             'alasan.required' => 'Alasan pengajuan wajib diisi.',
         ]);
 
+        // Proses penyimpanan data
         Pengajuan::create([
             'user_id' => Auth::id(),
             'barang_id' => $request->barang_id,
             'jumlah' => $request->jumlah,
             'alasan' => $request->alasan,
-            'status' => 'pending' // Sesuai diagram (Menunggu Verifikasi)
+            'status' => 'pending' // Status awal: Menunggu Verifikasi
         ]);
 
         return redirect()->route('karyawan.pengajuan.index')
@@ -77,6 +81,7 @@ class KaryawanController extends Controller
      */
     public function laporan_index()
     {
+        // Mengambil semua data barang beserta kategorinya
         $barangs = Barang::with('category')->get();
         return view('karyawan.laporan.index', compact('barangs'));
     }

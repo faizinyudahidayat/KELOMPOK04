@@ -46,6 +46,13 @@
             </nav>
 
             <div class="container-fluid">
+                @if($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show rounded-4 mb-4 border-0 shadow-sm" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ $errors->first() }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                @endif
+
                 @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show rounded-4 mb-4 border-0 shadow-sm" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
@@ -58,7 +65,7 @@
                         <div class="card shadow-sm">
                             <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
                                 <h5 class="fw-bold mb-0 text-dark">Daftar Kategori Barang</h5>
-                                <button class="btn btn-primary btn-sm rounded-pill px-3">
+                                <button class="btn btn-primary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalTambahKategori">
                                     <i class="bi bi-plus-lg"></i> Tambah Kategori
                                 </button>
                             </div>
@@ -78,7 +85,7 @@
                                                 <td class="ps-4 text-muted">{{ $key + 1 }}</td>
                                                 <td>
                                                     <span class="badge bg-info-subtle text-info px-3 py-2 rounded-pill fw-medium">
-                                                        <i class="bi bi-tag-fill me-1"></i> {{ $cat->nama_kategori }}
+                                                        <i class="bi bi-tag-fill me-1"></i> {{ $cat->name }}
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
@@ -97,7 +104,7 @@
                                             </tr>
                                             @empty
                                             <tr>
-                                                <td colspan="3" class="text-center py-5 text-muted italic">Belum ada kategori yang terdaftar.</td>
+                                                <td colspan="3" class="text-center py-5 text-muted">Belum ada kategori yang terdaftar.</td>
                                             </tr>
                                             @endforelse
                                         </tbody>
@@ -125,6 +132,30 @@
             <footer class="mt-5 py-4 text-center text-muted border-top">
                 <small>&copy; 2026 Informatika - UNIBA Madura</small>
             </footer>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalTambahKategori" tabindex="-1" aria-labelledby="modalTambahKategoriLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="modalTambahKategoriLabel"><i class="bi bi-tags-fill text-primary me-2"></i>Tambah Kategori Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('admin.category.store') }}" method="POST">
+                    @csrf
+                    <div class="modal-body py-4">
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-semibold text-secondary">Nama Kategori</label>
+                            <input type="text" class="form-control rounded-3" id="name" name="name" required placeholder="Contoh: ATK, Elektronik, Medis">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Simpan Kategori</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
