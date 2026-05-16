@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KaryawanController;
-use App\Http\Controllers\KepalaUmumController; // 👈 Mengimpor Controller Kepala Umum Baru
+use App\Http\Controllers\KepalaUmumController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,8 +78,10 @@ Route::middleware(['auth'])->prefix('karyawan')->group(function () {
  * Otoritas Validasi & Approval Otorisasi Logistik Pusat
  */
 Route::middleware(['auth'])->prefix('kepala-umum')->group(function () {
-    // Dashboard Kepala Umum
+    // Dashboard Utama Kepala Umum
     Route::get('/dashboard', [KepalaUmumController::class, 'dashboard_index'])->name('kepala_umum.dashboard');
 
-    // Tempat penulisan route validasi setuju/tolak pengajuan akan menyusul di sini nanti
+    // FIX: Jalur aksi pemrosesan keputusan operasional pengajuan barang
+    Route::post('/pengajuan/{id}/setujui', [KepalaUmumController::class, 'setujui'])->name('kepala_umum.pengajuan.setujui');
+    Route::post('/pengajuan/{id}/tolak', [KepalaUmumController::class, 'tolak'])->name('kepala_umum.pengajuan.tolak');
 });

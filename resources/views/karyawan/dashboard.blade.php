@@ -101,9 +101,9 @@
         </h4>
         <hr class="opacity-10 mb-4">
 
-        <a href="{{ route('karyawan.dashboard') }}" class="nav-link active"><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a>
-        <a href="{{ route('karyawan.pengajuan.index') }}" class="nav-link"><i class="bi bi-send-fill me-2"></i> Pengajuan</a>
-        <a href="{{ route('karyawan.laporan.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Laporan Stok</a>
+        <a href="{{ route('karyawan.dashboard') }}" class="nav-link {{ Request::is('karyawan/dashboard') ? 'active' : '' }}"><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a>
+        <a href="{{ route('karyawan.pengajuan.index') }}" class="nav-link {{ Request::is('karyawan/pengajuan*') && !Request::is('karyawan/pengajuan/create') ? 'active' : '' }}"><i class="bi bi-send-fill me-2"></i> Pengajuan</a>
+        <a href="{{ route('karyawan.laporan.index') }}" class="nav-link {{ Request::is('karyawan/laporan*') ? 'active' : '' }}"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Laporan Stok</a>
 
         <div class="mt-auto mb-3">
             <hr class="opacity-10">
@@ -115,6 +115,13 @@
 
     <div class="main-content">
         <div class="container-fluid px-0">
+
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 mb-4 text-white" role="alert" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.3) !important;">
+                <i class="bi bi-check-circle-fill me-2 text-success"></i> {{ session('success') }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
 
             <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
                 <div>
@@ -135,7 +142,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-secondary small fw-bold tracking-wider text-uppercase mb-1">Total Pengajuan</p>
-                                <h2 class="fw-bold text-white m-0">{{ $total_pengajuan ?? 0 }}</h2>
+                                <h2 class="fw-bold text-white m-0">{{ $totalPengajuan ?? 0 }}</h2>
                             </div>
                             <div class="p-3 rounded-4" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2);">
                                 <i class="bi bi-folder-fill fs-3"></i>
@@ -149,7 +156,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-secondary small fw-bold tracking-wider text-uppercase mb-1">Menunggu Verifikasi</p>
-                                <h2 class="fw-bold text-warning m-0">{{ $pending_pengajuan ?? 0 }}</h2>
+                                <h2 class="fw-bold text-warning m-0">{{ $pengajuanPending ?? 0 }}</h2>
                             </div>
                             <div class="p-3 rounded-4" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2);">
                                 <i class="bi bi-hourglass-split fs-3"></i>
@@ -163,7 +170,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-secondary small fw-bold tracking-wider text-uppercase mb-1">Disetujui / Terverifikasi</p>
-                                <h2 class="fw-bold text-success m-0">{{ $disetujui_pengajuan ?? 0 }}</h2>
+                                <h2 class="fw-bold text-success m-0">{{ $pengajuanDisetujui ?? 0 }}</h2>
                             </div>
                             <div class="p-3 rounded-4" style="background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2);">
                                 <i class="bi bi-check-circle-fill fs-3"></i>
@@ -177,7 +184,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-secondary small fw-bold tracking-wider text-uppercase mb-1">Permohonan Ditolak</p>
-                                <h2 class="fw-bold text-danger m-0">{{ $ditolak_pengajuan ?? 0 }}</h2>
+                                <h2 class="fw-bold text-danger m-0">{{ $pengajuanDitolak ?? 0 }}</h2>
                             </div>
                             <div class="p-3 rounded-4" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);">
                                 <i class="bi bi-x-circle-fill fs-3"></i>
@@ -208,24 +215,34 @@
                                         <th class="py-3 border-0">Tanggal</th>
                                         <th class="py-3 border-0">Nama Barang</th>
                                         <th class="py-3 border-0 text-center">Jumlah</th>
-                                        <th class="py-3 border-0">Alasan</th>
+                                        <th class="py-3 border-0">Catatan / Alasan Tolak</th>
                                         <th class="py-3 border-0 text-end">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody class="small">
-                                    {{-- Loop data riwayat asli dari controller --}}
-                                    @forelse($riwayat_pengajuans ?? [] as $p)
+                                    {{-- FIX: Variabel disesuaikan dengan $riwayatPengajuans dari controller --}}
+                                    @forelse($riwayatPengajuans ?? [] as $p)
                                     <tr>
-                                        <td class="py-3 text-muted">{{ $p->created_at->format('d M Y') }}</td>
-                                        <td class="py-3 fw-semibold text-white">{{ $p->barang->nama_barang }}</td>
-                                        <td class="py-3 text-center text-info fw-bold">{{ $p->jumlah }}</td>
-                                        <td class="py-3 text-muted text-truncate" style="max-width: 200px;">{{ $p->alasan }}</td>
+                                        <td class="py-3 text-muted">
+                                            {{ $p->created_at ? $p->created_at->format('d M Y') : '-' }}
+                                        </td>
+                                        <td class="py-3 fw-semibold text-white">
+                                            {{ $p->barang->nama_barang ?? 'Barang Terhapus' }}
+                                        </td>
+                                        <td class="py-3 text-center text-info fw-bold">{{ $p->jumlah }} Unit</td>
+                                        <td class="py-3 text-muted text-truncate" style="max-width: 200px;">
+                                            @if($p->status == 'ditolak')
+                                                <span class="text-danger fw-semibold">{{ $p->alasan_tolak ?? 'Ditolak Kepala Umum' }}</span>
+                                            @else
+                                                {{ $p->alasan ?? '-' }}
+                                            @endif
+                                        </td>
                                         <td class="py-3 text-end">
                                             @if($p->status == 'pending')
                                                 <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-20 px-3 py-2 rounded-pill">Menunggu</span>
-                                            @elseif($p->status == 'disetujui')
+                                            @elseif($p->status == 'verifikasi' || $p->status == 'selesai')
                                                 <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 px-3 py-2 rounded-pill">Disetujui</span>
-                                            @else
+                                            @elseif($p->status == 'ditolak')
                                                 <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20 px-3 py-2 rounded-pill">Ditolak</span>
                                             @endif
                                         </td>
@@ -234,7 +251,7 @@
                                     <tr>
                                         <td colspan="5" class="text-center py-5 text-muted">
                                             <i class="bi bi-inbox fs-2 d-block mb-2 opacity-40"></i>
-                                            Belum ada riwayat pengajuan barang.
+                                            Belum ada riwayat pengajuan barang yang terdata.
                                         </td>
                                     </tr>
                                     @endforelse

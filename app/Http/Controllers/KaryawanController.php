@@ -11,15 +11,35 @@ class KaryawanController extends Controller
 {
     /**
      * Tampilan Dashboard Karyawan
-     * Menampilkan statistik pengajuan milik user yang sedang login.
+     * Menampilkan statistik pengajuan milik user yang sedang login secara real-time.
      */
     public function index()
     {
-        // Menghitung statistik sederhana untuk dashboard
-        $totalPengajuan = Pengajuan::where('user_id', Auth::id())->count();
-        $pengajuanPending = Pengajuan::where('user_id', Auth::id())->where('status', 'pending')->count();
+        $userId = Auth::id();
 
-        return view('karyawan.dashboard', compact('totalPengajuan', 'pengajuanPending'));
+        // Menghitung statistik dinamis berdasarkan perubahan dari Kepala Umum
+        $totalPengajuan   = Pengajuan::where('user_id', $userId)->count();
+        $pengajuanPending = Pengajuan::where('user_id', $userId)->where('status', 'pending')->count();
+
+        // FIX: Tambahkan kueri hitung status verifikasi/selesai (Disetujui) dan status ditolak
+        $pengajuanDisetujui = Pengajuan::where('user_id', $userId)->whereIn('status', ['verifikasi', 'selesai'])->count();
+        $pengajuanDitolak   = Pengajuan::where('user_id', $userId)->where('status', 'ditolak')->count();
+
+        // FIX: Ambil 5 riwayat permohonan terkini untuk ditampilkan di tabel dashboard utama
+        $riwayatPengajuans = Pengajuan::with('barang')
+            ->where('user_id', $userId)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // Kembalikan ke view dashboard dengan membawa seluruh variabel penentu metrik
+        return view('karyawan.dashboard', compact(
+            'totalPengajuan',
+            'pengajuanPending',
+            'pengajuanDisetujui',
+            'pengajuanDitolak',
+            'riwayatPengajuans'
+        ));
     }
 
     /**

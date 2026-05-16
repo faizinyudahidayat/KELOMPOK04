@@ -177,6 +177,7 @@
                     <span class="text-white-50 p-0 m-0" style="font-size: 0.65rem;">General Manager</span>
                 </div>
             </div>
+
             <a href="{{ route('logout') }}" class="nav-link text-danger">
                 <i class="bi bi-box-arrow-left"></i> Sign Out
             </a>
@@ -314,15 +315,16 @@
                                     {{ $p->created_at ? $p->created_at->format('d/m/Y H:i') : '-' }} WIB
                                 </td>
                                 <td class="text-center">
-                                    <form action="#" method="POST" class="d-inline">
+                                    <form action="{{ route('kepala_umum.pengajuan.setujui', $p->id) }}" method="POST" class="d-inline">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-success rounded-3 px-3 me-1">
+                                        <button type="submit" class="btn btn-sm btn-success rounded-3 px-3 me-1" onclick="return confirm('Apakah Anda yakin ingin MENYETUJUI pengajuan barang ini?')">
                                             <i class="bi bi-check-lg"></i> Setujui
                                         </button>
                                     </form>
-                                    <form action="#" method="POST" class="d-inline">
+
+                                    <form action="{{ route('kepala_umum.pengajuan.tolak', $p->id) }}" method="POST" class="d-inline">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-danger rounded-3 px-3">
+                                        <button type="submit" class="btn btn-sm btn-danger rounded-3 px-3" onclick="return confirm('Apakah Anda yakin ingin MENOLAK pengajuan barang ini?')">
                                             <i class="bi bi-x"></i> Tolak
                                         </button>
                                     </form>
@@ -332,7 +334,7 @@
                             <tr>
                                 <td colspan="5" class="text-center py-5 text-muted">
                                     <i class="bi bi-clipboard-check fs-1 d-block mb-3 opacity-20"></i>
-                                    Bersih! Tidak ada antrean pengajuan yang perlu divalidasi.
+                                    Besih! Tidak ada antrean pengajuan yang perlu divalidasi.
                                 </td>
                             </tr>
                             @endforelse
