@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\KepalaUmumController; // 👈 Mengimpor Controller Kepala Umum Baru
 
 /*
 |--------------------------------------------------------------------------
@@ -45,9 +46,9 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/barang/{id}/update', [AdminController::class, 'barang_update'])->name('admin.barang.update');
     Route::delete('/barang/{id}/delete', [AdminController::class, 'barang_destroy'])->name('admin.barang.destroy');
 
-    // Manajemen Kategori (SUDAH DIPERBAIKI)
+    // Manajemen Kategori
     Route::get('/category', [AdminController::class, 'category_index'])->name('admin.category.index');
-    Route::post('/category/store', [AdminController::class, 'category_store'])->name('admin.category.store'); // 👈 KUNCI UTAMA: Penyelamat Tombol Tambah Kategori
+    Route::post('/category/store', [AdminController::class, 'category_store'])->name('admin.category.store');
     Route::get('/category/{id}/edit', [AdminController::class, 'category_edit'])->name('admin.category.edit');
     Route::put('/category/{id}/update', [AdminController::class, 'category_update'])->name('admin.category.update');
     Route::delete('/category/{id}/delete', [AdminController::class, 'category_destroy'])->name('admin.category.destroy');
@@ -69,4 +70,16 @@ Route::middleware(['auth'])->prefix('karyawan')->group(function () {
 
     // Fitur Melihat Laporan Inventaris (Stok)
     Route::get('/laporan', [KaryawanController::class, 'laporan_index'])->name('karyawan.laporan.index');
+});
+
+
+/**
+ * 3. Rute untuk Kepala Umum (Prefix: kepala-umum)
+ * Otoritas Validasi & Approval Otorisasi Logistik Pusat
+ */
+Route::middleware(['auth'])->prefix('kepala-umum')->group(function () {
+    // Dashboard Kepala Umum
+    Route::get('/dashboard', [KepalaUmumController::class, 'dashboard_index'])->name('kepala_umum.dashboard');
+
+    // Tempat penulisan route validasi setuju/tolak pengajuan akan menyusul di sini nanti
 });
