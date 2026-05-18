@@ -5,19 +5,42 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Barang;
 use App\Models\Category;
+use App\Models\Pengajuan; // Memanggil model Pengajuan agar terhubung ke db_inventaris
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
     /**
-     * Menampilkan Dashboard Utama
+     * Menampilkan Dashboard Utama Admin
      */
     public function index()
     {
+        // PROTEKSI KEAMANAN: Jika yang memaksa masuk bukan admin, langsung tolak!
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Akses Ditolak! Panel ini hanya untuk Admin.');
+        }
+
+        // Kueri bawaan Admin milikmu untuk data barang dan kategori
         $totalBarang = Barang::count();
         $totalKategori = Category::count();
         $allBarang = Barang::with('category')->latest()->take(5)->get();
 
-        return view('admin.dashboard', compact('totalBarang', 'totalKategori', 'allBarang'));
+        // 💡 FIXED SYNCHRONIZATION: Nama variabel disesuaikan menjadi $pengajuanDisetujui agar singkron dengan Blade
+        $totalPengajuan    = Pengajuan::count() ?? 0;
+        $pengajuanPending  = Pengajuan::where('status', 'pending')->count() ?? 0;
+        $pengajuanDisetujui = Pengajuan::where('status', 'verifikasi')->count() ?? 0; // Menggunakan nama sesuai panggian di Blade baris 166
+        $pengajuanDitolak  = Pengajuan::where('status', 'ditolak')->count() ?? 0;
+
+        // Melempar semua variabel (bawaan lama + data pengajuan baru yang sinkron) ke file blade dashboard admin
+        return view('admin.dashboard', compact(
+            'totalBarang',
+            'totalKategori',
+            'allBarang',
+            'totalPengajuan',
+            'pengajuanPending',
+            'pengajuanDisetujui',
+            'pengajuanDitolak'
+        ));
     }
 
     /**
@@ -122,7 +145,6 @@ class AdminController extends Controller
      */
     public function category_store(Request $request)
     {
-        // Tetap menggunakan input form 'name', tapi dicek ke kolom 'nama_kategori' di DB
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,nama_kategori',
         ], [
@@ -130,7 +152,6 @@ class AdminController extends Controller
             'name.unique' => 'Nama kategori sudah terdaftar.',
         ]);
 
-        // FIX: Simpan ke kolom 'nama_kategori'
         Category::create([
             'nama_kategori' => $request->name
         ]);
@@ -152,7 +173,6 @@ class AdminController extends Controller
      */
     public function category_update(Request $request, $id)
     {
-        // FIX: Validasi unik mengecek ke kolom 'nama_kategori'
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,nama_kategori,' . $id,
         ], [
@@ -162,7 +182,6 @@ class AdminController extends Controller
 
         $category = Category::findOrFail($id);
 
-        // FIX: Update ke kolom 'nama_kategori'
         $category->update([
             'nama_kategori' => $request->name
         ]);
