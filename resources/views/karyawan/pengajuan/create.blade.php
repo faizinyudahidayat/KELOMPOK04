@@ -66,12 +66,18 @@
         /* Form Custom Premium Input Styles */
         .custom-input {
             background-color: rgba(15, 23, 42, 0.6) !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important; /* Menaikkan kontras border input */
+            color: #ffffff !important;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        /* Penyesuaian warna teks placeholder agar tidak samar */
+        .custom-input::placeholder {
+            color: rgba(255, 255, 255, 0.45) !important;
+            opacity: 1;
         }
         .custom-addon {
             background-color: rgba(15, 23, 42, 0.6) !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
         }
         .custom-input:focus {
             background-color: rgba(15, 23, 42, 0.9) !important;
@@ -98,14 +104,14 @@
         .custom-btn-back:hover {
             background-color: rgba(255, 255, 255, 0.05);
             color: #f8fafc !important;
-            border-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
         }
         .custom-input.is-invalid {
             border-color: #ef4444 !important;
             box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15) !important;
         }
 
-        /* Responsive Breakpoints (Mobile Friendly) */
+        /* Responsive Breakpoints */
         @media (max-width: 768px) {
             .sidebar { margin-left: -260px; }
             .sidebar.active { margin-left: 0; }
@@ -129,9 +135,9 @@
         </h4>
         <hr class="opacity-10 mb-4">
 
-        <a href="{{ route('karyawan.dashboard') }}" class="nav-link"><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a>
-        <a href="{{ route('karyawan.pengajuan.index') }}" class="nav-link active"><i class="bi bi-send-fill me-2"></i> Pengajuan</a>
-        <a href="{{ route('karyawan.laporan.index') }}" class="nav-link"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Laporan Stok</a>
+        <a href="{{ route('karyawan.dashboard') }}" class="nav-link {{ Request::is('karyawan/dashboard') ? 'active' : '' }}"><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a>
+        <a href="{{ route('karyawan.pengajuan.index') }}" class="nav-link {{ Request::is('karyawan/pengajuan*') ? 'active' : '' }} active"><i class="bi bi-send-fill me-2"></i> Pengajuan</a>
+        <a href="{{ route('karyawan.laporan.index') }}" class="nav-link {{ Request::is('karyawan/laporan*') ? 'active' : '' }}"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Laporan Stok</a>
 
         <div class="mt-auto mb-3">
             <hr class="opacity-10">
@@ -147,8 +153,8 @@
             <div class="mb-4">
                 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                     <ol class="breadcrumb mb-1">
-                        <li class="breadcrumb-item"><a href="{{ route('karyawan.dashboard') }}" class="text-decoration-none text-muted small">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('karyawan.pengajuan.index') }}" class="text-decoration-none text-muted small">Pengajuan</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('karyawan.dashboard') }}" class="text-decoration-none text-white-50 small">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('karyawan.pengajuan.index') }}" class="text-decoration-none text-white-50 small">Pengajuan</a></li>
                         <li class="breadcrumb-item active text-info small fw-semibold" aria-current="page">Buat Permohonan</li>
                     </ol>
                 </nav>
@@ -169,7 +175,7 @@
                             </div>
                             <div>
                                 <h5 class="fw-bold m-0 text-white">Detail Permohonan</h5>
-                                <p class="text-muted small m-0">Silakan tentukan logistik yang ingin Anda ajukan.</p>
+                                <p class="text-white-50 small m-0">Silakan tentukan logistik yang ingin Anda ajukan.</p>
                             </div>
                         </div>
 
@@ -177,12 +183,12 @@
                             @csrf
 
                             <div class="mb-3">
-                                <label for="barang_id" class="form-label text-secondary small fw-bold tracking-wider text-uppercase">Pilih Komoditas / Barang</label>
+                                <label for="barang_id" class="form-label text-light small fw-bold tracking-wider text-uppercase">Pilih Komoditas / Barang</label>
                                 <select name="barang_id"
                                         id="barang_id"
                                         class="form-select custom-input p-3 text-white rounded-3 @error('barang_id') is-invalid @enderror"
                                         required>
-                                    <option value="" disabled selected hidden>-- Pilih Inventaris Tersedia --</option>
+                                    <option value="" disabled selected hidden class="text-white-50">-- Pilih Inventaris Tersedia --</option>
                                     @foreach($barangs as $b)
                                         <option value="{{ $b->id }}" {{ old('barang_id') == $b->id ? 'selected' : '' }} class="bg-dark text-white">
                                             {{ $b->nama_barang }} (Tersedia: {{ $b->stok }} Unit)
@@ -197,9 +203,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="jumlah" class="form-label text-secondary small fw-bold tracking-wider text-uppercase">Kuantitas Permintaan</label>
+                                <label for="jumlah" class="form-label text-light small fw-bold tracking-wider text-uppercase">Kuantitas Permintaan</label>
                                 <div class="input-group">
-                                    <span class="input-group-text border-end-0 text-secondary px-3 custom-addon">
+                                    <span class="input-group-text border-end-0 px-3 custom-addon">
                                         <i class="bi bi-calculator-fill text-primary"></i>
                                     </span>
                                     <input type="number"
@@ -219,7 +225,7 @@
                             </div>
 
                             <div class="mb-4">
-                                <label for="alasan" class="form-label text-secondary small fw-bold tracking-wider text-uppercase">Justifikasi / Alasan Keperluan</label>
+                                <label for="alasan" class="form-label text-light small fw-bold tracking-wider text-uppercase">Justifikasi / Alasan Keperluan</label>
                                 <textarea name="alasan"
                                           id="alasan"
                                           class="form-control custom-input p-3 text-white rounded-3 @error('alasan') is-invalid @enderror"
@@ -237,7 +243,7 @@
                             <div class="row g-3 pt-2">
                                 <div class="col-md-4 order-md-1">
                                     <a href="{{ route('karyawan.pengajuan.index') }}"
-                                       class="btn btn-outline-secondary w-100 p-3 fw-semibold rounded-3 text-white border-secondary border-opacity-20 custom-btn-back">
+                                       class="btn btn-outline-secondary w-100 p-3 fw-semibold rounded-3 text-white border-secondary border-opacity-40 custom-btn-back">
                                         Batal
                                     </a>
                                 </div>

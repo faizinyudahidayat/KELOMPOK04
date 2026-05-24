@@ -249,8 +249,8 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="5" class="text-center py-5 text-muted">
-                                            <i class="bi bi-inbox fs-2 d-block mb-2 opacity-40"></i>
+                                        <td colspan="5" class="text-center py-5 text-white-50">
+                                            <i class="bi bi-inbox fs-2 d-block mb-2 text-primary opacity-75"></i>
                                             Belum ada riwayat pengajuan barang yang terdata.
                                         </td>
                                     </tr>
@@ -278,4 +278,3 @@
     </script>
 </body>
 </html>
-
