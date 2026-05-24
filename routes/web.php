@@ -8,17 +8,19 @@ use App\Http\Controllers\KepalaUmumController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Web Routes — Sistem Inventaris Kelompok 04 (UNIBA Madura)
 |--------------------------------------------------------------------------
 */
 
-// Halaman Utama dialihkan ke login
+// Halaman Utama dialihkan ke login secara default
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
 /**
+ * =========================================================================
  * Rute Autentikasi (Login, Logout, & Lupa Password)
+ * =========================================================================
  */
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate']);
@@ -32,13 +34,16 @@ Route::post('/reset-password', [AuthController::class, 'updatePassword'])->name(
 
 
 /**
+ * =========================================================================
  * 1. Rute untuk Administrator (Prefix: admin)
+ * Hak Akses: Modifikasi Data Barang, Kategori, & Pantau Sistem Penuh
+ * =========================================================================
  */
 Route::middleware(['auth'])->prefix('admin')->group(function () {
-    // Dashboard Utama
+    // Dashboard Utama Admin
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
-    // Manajemen Barang
+    // Manajemen Barang (Aset Logistik)
     Route::get('/barang', [AdminController::class, 'barang_index'])->name('admin.barang.index');
     Route::get('/barang/create', [AdminController::class, 'create'])->name('admin.barang.create');
     Route::post('/barang/store', [AdminController::class, 'store'])->name('admin.barang.store');
@@ -46,7 +51,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/barang/{id}/update', [AdminController::class, 'barang_update'])->name('admin.barang.update');
     Route::delete('/barang/{id}/delete', [AdminController::class, 'barang_destroy'])->name('admin.barang.destroy');
 
-    // Manajemen Kategori
+    // Manajemen Kategori (Sinkronisasi Form POST Dashboard)
     Route::get('/category', [AdminController::class, 'category_index'])->name('admin.category.index');
     Route::post('/category/store', [AdminController::class, 'category_store'])->name('admin.category.store');
     Route::get('/category/{id}/edit', [AdminController::class, 'category_edit'])->name('admin.category.edit');
@@ -56,32 +61,36 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
 
 /**
+ * =========================================================================
  * 2. Rute untuk Karyawan (Prefix: karyawan)
- * Sesuai Use Case: Melakukan Pengajuan & Lihat Laporan
+ * Hak Akses: Melakukan Pengajuan Logistik & Cek Stok Real-time
+ * =========================================================================
  */
 Route::middleware(['auth'])->prefix('karyawan')->group(function () {
-    // Dashboard Karyawan
+    // Dashboard Utama Karyawan
     Route::get('/dashboard', [KaryawanController::class, 'index'])->name('karyawan.dashboard');
 
-    // Fitur Melakukan Pengajuan Barang
+    // Fitur Alur Pengajuan Barang Baru
     Route::get('/pengajuan', [KaryawanController::class, 'pengajuan_index'])->name('karyawan.pengajuan.index');
     Route::get('/pengajuan/create', [KaryawanController::class, 'pengajuan_create'])->name('karyawan.pengajuan.create');
     Route::post('/pengajuan/store', [KaryawanController::class, 'pengajuan_store'])->name('karyawan.pengajuan.store');
 
-    // Fitur Melihat Laporan Inventaris (Stok)
+    // Fitur Melihat Laporan Inventaris Utama
     Route::get('/laporan', [KaryawanController::class, 'laporan_index'])->name('karyawan.laporan.index');
 });
 
 
 /**
+ * =========================================================================
  * 3. Rute untuk Kepala Umum (Prefix: kepala-umum)
- * Otoritas Validasi & Approval Otorisasi Logistik Pusat
+ * Hak Akses: Otoritas Tertinggi Approval / Penolakan Pengajuan Logistik
+ * =========================================================================
  */
 Route::middleware(['auth'])->prefix('kepala-umum')->group(function () {
     // Dashboard Utama Kepala Umum
     Route::get('/dashboard', [KepalaUmumController::class, 'dashboard_index'])->name('kepala_umum.dashboard');
 
-    // FIX: Jalur aksi pemrosesan keputusan operasional pengajuan barang
+    // Jalur Verifikasi Pengajuan Operasional
     Route::post('/pengajuan/{id}/setujui', [KepalaUmumController::class, 'setujui'])->name('kepala_umum.pengajuan.setujui');
     Route::post('/pengajuan/{id}/tolak', [KepalaUmumController::class, 'tolak'])->name('kepala_umum.pengajuan.tolak');
 });

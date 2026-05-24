@@ -20,18 +20,18 @@ class AdminController extends Controller
             abort(403, 'Akses Ditolak! Panel ini hanya untuk Admin.');
         }
 
-        // Kueri bawaan Admin milikmu untuk data barang dan kategori
+        // Kueri bawaan Admin data barang dan kategori
         $totalBarang = Barang::count();
         $totalKategori = Category::count();
         $allBarang = Barang::with('category')->latest()->take(5)->get();
 
-        // 💡 FIXED SYNCHRONIZATION: Nama variabel disesuaikan menjadi $pengajuanDisetujui agar singkron dengan Blade
+        // FIXED SYNCHRONIZATION: Variabel sinkron dengan Blade panel utama
         $totalPengajuan    = Pengajuan::count() ?? 0;
         $pengajuanPending  = Pengajuan::where('status', 'pending')->count() ?? 0;
-        $pengajuanDisetujui = Pengajuan::where('status', 'verifikasi')->count() ?? 0; // Menggunakan nama sesuai panggian di Blade baris 166
+        $pengajuanDisetujui = Pengajuan::where('status', 'verifikasi')->count() ?? 0;
         $pengajuanDitolak  = Pengajuan::where('status', 'ditolak')->count() ?? 0;
 
-        // Melempar semua variabel (bawaan lama + data pengajuan baru yang sinkron) ke file blade dashboard admin
+        // Melempar semua variabel ke file blade dashboard admin
         return view('admin.dashboard', compact(
             'totalBarang',
             'totalKategori',
@@ -127,7 +127,7 @@ class AdminController extends Controller
         return redirect()->route('admin.barang.index')->with('success', 'Barang berhasil dihapus!');
     }
 
-    // --- FITUR MANAJEMEN KATEGORI (FIXED COLUMN) ---
+    // --- FITUR MANAJEMEN KATEGORI (FIXED SINKRONISASI FIELD) ---
 
     /**
      * 1. Menampilkan Daftar Kategori
@@ -142,21 +142,23 @@ class AdminController extends Controller
 
     /**
      * 2. Menyimpan Kategori Baru
+     * FIXED: Request disamakan menggunakan 'nama_kategori' sesuai modal form Blade
      */
     public function category_store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:categories,nama_kategori',
+            'nama_kategori' => 'required|string|max:255|unique:categories,nama_kategori',
         ], [
-            'name.required' => 'Nama kategori wajib diisi.',
-            'name.unique' => 'Nama kategori sudah terdaftar.',
+            'nama_kategori.required' => 'Nama kategori wajib diisi.',
+            'nama_kategori.unique'   => 'Nama kategori sudah terdaftar di sistem.',
         ]);
 
         Category::create([
-            'nama_kategori' => $request->name
+            'nama_kategori' => $request->nama_kategori
         ]);
 
-        return redirect()->route('admin.category.index')->with('success', 'Kategori baru berhasil disimpan!');
+        // Dialihkan kembali dengan membawa notifikasi sukses pop-up
+        return redirect()->back()->with('success', 'Kategori baru berhasil disimpan ke sistem!');
     }
 
     /**
@@ -170,20 +172,21 @@ class AdminController extends Controller
 
     /**
      * 4. Memproses Update Kategori
+     * FIXED: Request disamakan menggunakan 'nama_kategori'
      */
     public function category_update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:categories,nama_kategori,' . $id,
+            'nama_kategori' => 'required|string|max:255|unique:categories,nama_kategori,' . $id,
         ], [
-            'name.required' => 'Nama kategori tidak boleh kosong.',
-            'name.unique' => 'Nama kategori sudah digunakan.',
+            'nama_kategori.required' => 'Nama kategori tidak boleh kosong.',
+            'nama_kategori.unique'   => 'Nama kategori sudah digunakan.',
         ]);
 
         $category = Category::findOrFail($id);
 
         $category->update([
-            'nama_kategori' => $request->name
+            'nama_kategori' => $request->nama_kategori
         ]);
 
         return redirect()->route('admin.category.index')->with('success', 'Kategori berhasil diperbarui!');

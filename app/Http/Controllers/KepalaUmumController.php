@@ -9,20 +9,17 @@ use Illuminate\Support\Facades\Auth;
 
 class KepalaUmumController extends Controller
 {
-    // 💡 KUNCI FIX: Konstruktor __construct() dengan $this->middleware() dihapus
-    // karena jalur otentikasi 'auth' sudah ditangani langsung di routes/web.php
-
     /**
      * Tampilan Dashboard Kepala Umum
      */
     public function dashboard_index()
     {
-        // PROTEKSI KEAMANAN: Jika yang masuk bukan kepala_umum, tendang kembali!
-        if (Auth::user()->role !== 'kepala_umum') {
+        // PROTEKSI KEAMANAN: Memeriksa kedua format role ('kepala_umum' dan 'kepala-umum')
+        if (Auth::user()->role !== 'kepala_umum' && Auth::user()->role !== 'kepala-umum') {
             abort(403, 'Akses Ditolak! Anda bukan Kepala Umum.');
         }
 
-        // Ambil data statistik dari database
+        // Ambil data statistik dari database db_inventaris
         $countPending  = Pengajuan::where('status', 'pending')->count() ?? 0;
         $countVerified = Pengajuan::where('status', 'verifikasi')->count() ?? 0;
         $countBarang   = Barang::count() ?? 0;
@@ -50,19 +47,18 @@ class KepalaUmumController extends Controller
      */
     public function setujui($id)
     {
-        // Proteksi keamanan level role
-        if (Auth::user()->role !== 'kepala_umum') {
+        // Proteksi keamanan level role ganda
+        if (Auth::user()->role !== 'kepala_umum' && Auth::user()->role !== 'kepala-umum') {
             abort(403, 'Akses Ditolak!');
         }
 
-        // Cari data pengajuan berdasarkan ID, jika tidak ada langsung munculkan eror 404
+        // Cari data pengajuan berdasarkan ID
         $pengajuan = Pengajuan::findOrFail($id);
 
-        // Ubah status menjadi 'verifikasi' agar bisa diproses cetak/kurangi stok oleh Admin/Finance
+        // Ubah status menjadi 'verifikasi' agar sinkron dengan sistem logistik pusat
         $pengajuan->status = 'verifikasi';
         $pengajuan->save();
 
-        // Kembalikan ke halaman dashboard dengan notifikasi sukses gokil
         return redirect()->back()->with('success', 'Pengajuan logistik berhasil disetujui dan diteruskan ke Admin!');
     }
 
@@ -71,8 +67,8 @@ class KepalaUmumController extends Controller
      */
     public function tolak($id)
     {
-        // Proteksi keamanan level role
-        if (Auth::user()->role !== 'kepala_umum') {
+        // Proteksi keamanan level role ganda
+        if (Auth::user()->role !== 'kepala_umum' && Auth::user()->role !== 'kepala-umum') {
             abort(403, 'Akses Ditolak!');
         }
 
@@ -83,7 +79,6 @@ class KepalaUmumController extends Controller
         $pengajuan->status = 'ditolak';
         $pengajuan->save();
 
-        // Kembalikan ke halaman dashboard dengan notifikasi penolakan
         return redirect()->back()->with('success', 'Pengajuan logistik telah resmi ditolak.');
     }
 }

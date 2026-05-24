@@ -202,9 +202,9 @@
                     <div class="card-header bg-white py-3 border-0">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="fw-bold mb-0 text-dark">5 Barang yang Baru Ditambahkan</h5>
-                            <a href="{{ route('admin.barang.create') }}" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
-                                <i class="bi bi-plus-lg me-1"></i> Tambah Barang Baru
-                            </a>
+                            <button class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahKategori">
+                                <i class="bi bi-plus-lg me-1"></i> Tambah Kategori Baru
+                            </button>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -255,6 +255,30 @@
                 <footer class="mt-5 py-4 text-center text-muted border-top">
                     <small>Dibuat oleh Kelompok 04 &copy; 2026 Informatika - UNIBA Madura</small>
                 </footer>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalTambahKategori" tabindex="-1" aria-labelledby="modalTambahKategoriLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="modalTambahKategoriLabel"><i class="bi bi-tags-fill text-primary me-2"></i>Tambah Kategori Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('admin.category.store') }}" method="POST">
+                    @csrf
+                    <div class="modal-body py-4">
+                        <div class="mb-3">
+                            <label for="nama_kategori" class="form-label fw-semibold text-secondary">Nama Kategori</label>
+                            <input type="text" class="form-control rounded-3" id="nama_kategori" name="nama_kategori" required placeholder="Contoh: ATK, Elektronik, Medis">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">Simpan Kategori</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

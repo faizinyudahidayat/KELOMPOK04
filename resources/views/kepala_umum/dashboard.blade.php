@@ -10,7 +10,7 @@
 
     <style>
         :root {
-            --accent-color: #a855f7; /* Ungu khas untuk level manajemen/Kepala */
+            --accent-color: #a855f7; /* Ungu khas manajemen */
             --bg-dark: #0f172a;
             --card-bg: rgba(30, 41, 59, 0.7);
             --sidebar-bg: rgba(15, 23, 42, 0.95);
@@ -34,7 +34,7 @@
             padding: 2rem 1.5rem;
             position: fixed;
             height: 100vh;
-            z-index: 1000;
+            z-index: 1010;
             transition: transform 0.3s ease-in-out;
         }
 
@@ -107,14 +107,32 @@
 
         .mobile-header {
             display: none;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
         }
+
+        /* Sidebar Overlay Background */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1005;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+        .sidebar-overlay.show { display: block; }
 
         /* Responsive Breakpoints */
         @media (max-width: 991.98px) {
-            body { flex-direction: column; }
+            body { flex-direction: column; padding-top: 70px; }
             .sidebar { transform: translateX(-100%); }
             .sidebar.show { transform: translateX(0); }
             .main-content { margin-left: 0; width: 100%; padding: 1.5rem; }
@@ -133,14 +151,16 @@
     <div class="mobile-header w-100 px-4 py-3 align-items-center justify-content-between d-lg-none">
         <div class="d-flex align-items-center">
             <div class="bg-purple bg-opacity-10 p-2 rounded-3 me-2">
-                <i class="bi bi-shield-lock-fill text-purple fs-5" style="color: #a855f7;"></i>
+                <i class="bi bi-shield-lock-fill fs-5" style="color: #a855f7;"></i>
             </div>
             <span class="fw-bold tracking-wide">INV-UNIBA (KU)</span>
         </div>
         <button class="btn text-white p-0" id="mobileMenuToggle">
-            <i class="bi bi-list fs-2 text-purple" style="color: #a855f7;"></i>
+            <i class="bi bi-list fs-2" style="color: #a855f7;"></i>
         </button>
     </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="sidebar d-flex flex-column" id="sidebarContainer">
         <div class="d-flex align-items-center justify-content-between mb-5 px-2">
@@ -171,7 +191,9 @@
         <div class="mt-auto">
             <hr class="opacity-10">
             <div class="px-2 mb-3 d-flex align-items-center">
-                <div class="bg-secondary rounded-circle me-2" style="width: 35px; height: 35px; background: url('https://via.placeholder.com/150') center/cover;"></div>
+                <div class="rounded-circle me-2" style="width: 35px; height: 35px; background: #334155; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-person-fill text-white-50"></i>
+                </div>
                 <div class="overflow-hidden">
                     <p class="small fw-bold m-0 text-truncate">{{ Auth::user()->name ?? 'Kepala Umum' }}</p>
                     <span class="text-white-50 p-0 m-0" style="font-size: 0.65rem;">General Manager</span>
@@ -195,7 +217,7 @@
                     <p class="text-muted small mb-0">Selamat datang kembali. Berikut ringkasan aktivitas logistik db_inventaris hari ini.</p>
                 </div>
                 <span class="badge bg-dark border border-secondary px-3 py-2 rounded-3 text-white-50">
-                    <i class="bi bi-calendar3 me-2 text-purple" style="color: #a855f7;"></i>{{ date('d M Y') }}
+                    <i class="bi bi-calendar3 me-2" style="color: #a855f7;"></i>{{ date('d M Y') }}
                 </span>
             </div>
 
@@ -255,7 +277,7 @@
             <div class="row g-4 mb-5">
                 <div class="col-12 col-xl-7">
                     <div class="stat-card p-4 h-100">
-                        <h5 class="fw-bold mb-3"><i class="bi bi-activity me-2 text-purple" style="color: #a855f7;"></i>Tren Grafik Pengajuan</h5>
+                        <h5 class="fw-bold mb-3"><i class="bi bi-activity me-2" style="color: #a855f7;"></i>Tren Grafik Pengajuan</h5>
                         <div style="height: 250px; position: relative;">
                             <canvas id="trenChart"></canvas>
                         </div>
@@ -271,7 +293,7 @@
                                 <span class="badge bg-info bg-opacity-10 text-info">Input Request</span>
                             </div>
                             <div class="text-center py-0 my-0"><i class="bi bi-arrow-down text-muted"></i></div>
-                            <div class="p-3 rounded-3 border border-purple bg-dark bg-opacity-40 d-flex align-items-center justify-content-between" style="border-color: rgba(168, 85, 247, 0.4) !important;">
+                            <div class="p-3 rounded-3 border bg-dark bg-opacity-40 d-flex align-items-center justify-content-between" style="border-color: rgba(168, 85, 247, 0.4) !important;">
                                 <span class="small"><i class="bi bi-shield-lock me-2" style="color: #a855f7;"></i> Kepala Umum</span>
                                 <span class="badge bg-purple bg-opacity-10" style="color: #a855f7; background-color: rgba(168, 85, 247, 0.1)">Validasi & ACC</span>
                             </div>
@@ -334,7 +356,7 @@
                             <tr>
                                 <td colspan="5" class="text-center py-5 text-muted">
                                     <i class="bi bi-clipboard-check fs-1 d-block mb-3 opacity-20"></i>
-                                    Besih! Tidak ada antrean pengajuan yang perlu divalidasi.
+                                    Bersih! Tidak ada antrean pengajuan yang perlu divalidasi.
                                 </td>
                             </tr>
                             @endforelse
@@ -353,16 +375,29 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // JS Toggle Menu Mobile
+        // JS Toggle Menu Mobile & Overlay Setup
         const menuToggle = document.getElementById('mobileMenuToggle');
         const menuClose = document.getElementById('mobileMenuClose');
         const sidebarContainer = document.getElementById('sidebarContainer');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-        if (menuToggle && sidebarContainer) {
-            menuToggle.addEventListener('click', () => sidebarContainer.classList.add('show'));
+        if (menuToggle && sidebarContainer && sidebarOverlay) {
+            menuToggle.addEventListener('click', () => {
+                sidebarContainer.classList.add('show');
+                sidebarOverlay.classList.add('show');
+            });
         }
-        if (menuClose && sidebarContainer) {
-            menuClose.addEventListener('click', () => sidebarContainer.classList.remove('show'));
+        if (menuClose && sidebarContainer && sidebarOverlay) {
+            menuClose.addEventListener('click', () => {
+                sidebarContainer.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+            });
+        }
+        if (sidebarOverlay && sidebarContainer) {
+            sidebarOverlay.addEventListener('click', () => {
+                sidebarContainer.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+            });
         }
 
         // Render Grafik Tren Pengajuan menggunakan Chart.js dengan tema gelap
@@ -373,7 +408,7 @@
                 labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
                 datasets: [{
                     label: 'Jumlah Pengajuan',
-                    data: [12, 19, 3, 5, 2, 3], // Isikan data dinamis dari Controller nanti
+                    data: [12, 19, 3, 5, 2, 3],
                     borderColor: '#a855f7',
                     backgroundColor: 'rgba(168, 85, 247, 0.1)',
                     borderWidth: 3,
