@@ -87,6 +87,11 @@
             font-size: 0.95rem;
         }
 
+        /* Penyesuaian khusus untuk input password agar tidak terpotong tombol mata */
+        .input-password-custom {
+            border-radius: 0 !important;
+        }
+
         .form-control:focus {
             background: rgba(15, 23, 42, 0.8);
             border-color: var(--accent-color);
@@ -124,7 +129,6 @@
             text-decoration: underline;
         }
 
-        /* Styling untuk Pesan Sukses */
         .alert-success {
             background: rgba(16, 185, 129, 0.1);
             color: #10b981;
@@ -168,7 +172,7 @@
                             <label class="form-label">EMAIL ADDRESS</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input type="email" name="email" class="form-control" placeholder="admin@uniba.ac.id" value="{{ old('email') }}" required autofocus>
+                                <input type="email" name="email" class="form-control" placeholder="admin@uniba.ac.id" value="{{ old('email') }}" required autofocus style="border-radius: 0 12px 12px 0;">
                             </div>
                         </div>
 
@@ -179,8 +183,10 @@
                             </div>
                             <div class="input-group mt-1">
                                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                <input type="password" name="password" id="password" class="form-control" placeholder="••••••••" required>
-                                <button class="btn btn-outline-secondary border-start-0 bg-transparent text-muted" type="button" onclick="togglePassword()" style="border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0 12px 12px 0;">
+                                <!-- Tambahkan sedikit CSS inline untuk merapikan border radius tengah -->
+                                <input type="password" name="password" id="password" class="form-control" placeholder="••••••••" required style="border-radius: 0;">
+                                <!-- Tombol Mata yang sudah diperbaiki -->
+                                <button class="btn btn-outline-secondary border-start-0 text-white" type="button" onclick="togglePassword()" style="border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0 12px 12px 0; background: rgba(255, 255, 255, 0.1);">
                                     <i class="bi bi-eye" id="eyeIcon"></i>
                                 </button>
                             </div>
