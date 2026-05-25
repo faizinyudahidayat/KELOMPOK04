@@ -193,7 +193,7 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 shadow">
-                            SUBMIT<i class="bi bi-arrow-right ms-2"></i>
+                            MASUK<i class="bi bi-arrow-right ms-2"></i>
                         </button>
                     </form>
 
