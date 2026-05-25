@@ -47,13 +47,18 @@
             display: flex;
             align-items: center;
             text-decoration: none;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
         }
 
         .nav-link i { font-size: 1.2rem; margin-right: 15px; }
 
         .nav-link:hover, .nav-link.active {
-            background: rgba(168, 85, 247, 0.1);
-            color: var(--accent-color);
+            background: rgba(168, 85, 247, 0.1) !important;
+            color: var(--accent-color) !important;
         }
 
         /* Main Content Styling */
@@ -175,18 +180,20 @@
             </button>
         </div>
 
-        <a href="#" class="nav-link active">
-            <i class="bi bi-grid-1x2-fill"></i> Dashboard Overview
-        </a>
-        <a href="#" class="nav-link">
-            <i class="bi bi-check2-square"></i> Validasi Pengajuan
-        </a>
-        <a href="#" class="nav-link">
-            <i class="bi bi-graph-up-arrow"></i> Analisis Logistik
-        </a>
-        <a href="#" class="nav-link">
-            <i class="bi bi-people"></i> Manajemen User
-        </a>
+        <div class="nav flex-column" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <button class="nav-link active" id="tab-overview-button" data-bs-toggle="pill" data-bs-target="#panel-overview" type="button" role="tab">
+                <i class="bi bi-grid-1x2-fill"></i> Dashboard Overview
+            </button>
+            <button class="nav-link" id="tab-validasi-button" data-bs-toggle="pill" data-bs-target="#panel-validasi" type="button" role="tab">
+                <i class="bi bi-check2-square"></i> Validasi Pengajuan
+            </button>
+            <button class="nav-link" id="tab-logistik-button" data-bs-toggle="pill" data-bs-target="#panel-logistik" type="button" role="tab">
+                <i class="bi bi-graph-up-arrow"></i> Analisis Logistik
+            </button>
+            <button class="nav-link" id="tab-user-button" data-bs-toggle="pill" data-bs-target="#panel-user" type="button" role="tab">
+                <i class="bi bi-people"></i> Manajemen User
+            </button>
+        </div>
 
         <div class="mt-auto">
             <hr class="opacity-10">
@@ -200,7 +207,7 @@
                 </div>
             </div>
 
-            <a href="{{ route('logout') }}" class="nav-link text-danger">
+            <a href="{{ route('logout') }}" class="nav-link text-danger m-0 p-2">
                 <i class="bi bi-box-arrow-left"></i> Sign Out
             </a>
         </div>
@@ -227,142 +234,171 @@
                 </div>
             @endif
 
-            <div class="row g-4 mb-5">
-                <div class="col-6 col-lg-3">
-                    <div class="metric-card d-flex align-items-center">
-                        <div class="p-3 rounded-3 me-3" style="background: rgba(234, 179, 8, 0.1); color: #eab308;">
-                            <i class="bi bi-hourglass-split fs-3"></i>
-                        </div>
-                        <div>
-                            <p class="text-muted small mb-1">Butuh Validasi</p>
-                            <h3 class="fw-bold m-0">{{ $countPending ?? 0 }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="metric-card d-flex align-items-center">
-                        <div class="p-3 rounded-3 me-3" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
-                            <i class="bi bi-check2-all fs-3"></i>
-                        </div>
-                        <div>
-                            <p class="text-muted small mb-1">Disetujui</p>
-                            <h3 class="fw-bold m-0">{{ $countVerified ?? 0 }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="metric-card d-flex align-items-center">
-                        <div class="p-3 rounded-3 me-3" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-                            <i class="bi bi-box-seam fs-3"></i>
-                        </div>
-                        <div>
-                            <p class="text-muted small mb-1">Total Item</p>
-                            <h3 class="fw-bold m-0">{{ $countBarang ?? 0 }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <div class="metric-card d-flex align-items-center">
-                        <div class="p-3 rounded-3 me-3" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-                            <i class="bi bi-exclamation-octagon fs-3"></i>
-                        </div>
-                        <div>
-                            <p class="text-muted small mb-1">Stok Kritis</p>
-                            <h3 class="fw-bold m-0">{{ $countKritis ?? 0 }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="tab-content" id="v-pills-tabContent">
 
-            <div class="row g-4 mb-5">
-                <div class="col-12 col-xl-7">
-                    <div class="stat-card p-4 h-100">
-                        <h5 class="fw-bold mb-3"><i class="bi bi-activity me-2" style="color: #a855f7;"></i>Tren Grafik Pengajuan</h5>
-                        <div style="height: 250px; position: relative;">
-                            <canvas id="trenChart"></canvas>
+                <div class="tab-pane fade show active" id="panel-overview" role="tabpanel">
+                    <div class="row g-4 mb-5">
+                        <div class="col-6 col-lg-3">
+                            <div class="metric-card d-flex align-items-center">
+                                <div class="p-3 rounded-3 me-3" style="background: rgba(234, 179, 8, 0.1); color: #eab308;">
+                                    <i class="bi bi-hourglass-split fs-3"></i>
+                                </div>
+                                <div>
+                                    <p class="text-muted small mb-1">Butuh Validasi</p>
+                                    <h3 class="fw-bold m-0">{{ $countPending ?? 0 }}</h3>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-12 col-xl-5">
-                    <div class="stat-card p-4 h-100">
-                        <h5 class="fw-bold mb-3"><i class="bi bi-diagram-3 me-2 text-info"></i>Konektivitas Jalur Role</h5>
-                        <p class="text-muted small">Sistem ini menghubungkan arus persetujuan logistik terpusat:</p>
-                        <div class="vstack gap-3 mt-4">
-                            <div class="p-3 rounded-3 border border-secondary bg-dark bg-opacity-40 d-flex align-items-center justify-content-between">
-                                <span class="small"><i class="bi bi-person me-2 text-info"></i> Karyawan</span>
-                                <span class="badge bg-info bg-opacity-10 text-info">Input Request</span>
+                        <div class="col-6 col-lg-3">
+                            <div class="metric-card d-flex align-items-center">
+                                <div class="p-3 rounded-3 me-3" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                                    <i class="bi bi-check2-all fs-3"></i>
+                                </div>
+                                <div>
+                                    <p class="text-muted small mb-1">Disetujui</p>
+                                    <h3 class="fw-bold m-0">{{ $countVerified ?? 0 }}</h3>
+                                </div>
                             </div>
-                            <div class="text-center py-0 my-0"><i class="bi bi-arrow-down text-muted"></i></div>
-                            <div class="p-3 rounded-3 border bg-dark bg-opacity-40 d-flex align-items-center justify-content-between" style="border-color: rgba(168, 85, 247, 0.4) !important;">
-                                <span class="small"><i class="bi bi-shield-lock me-2" style="color: #a855f7;"></i> Kepala Umum</span>
-                                <span class="badge bg-purple bg-opacity-10" style="color: #a855f7; background-color: rgba(168, 85, 247, 0.1)">Validasi & ACC</span>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="metric-card d-flex align-items-center">
+                                <div class="p-3 rounded-3 me-3" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+                                    <i class="bi bi-box-seam fs-3"></i>
+                                </div>
+                                <div>
+                                    <p class="text-muted small mb-1">Total Item</p>
+                                    <h3 class="fw-bold m-0">{{ $countBarang ?? 0 }}</h3>
+                                </div>
                             </div>
-                            <div class="text-center py-0 my-0"><i class="bi bi-arrow-down text-muted"></i></div>
-                            <div class="p-3 rounded-3 border border-secondary bg-dark bg-opacity-40 d-flex align-items-center justify-content-between">
-                                <span class="small"><i class="bi bi-person-gear me-2 text-success"></i> Admin / Finance</span>
-                                <span class="badge bg-success bg-opacity-10 text-success">Cetak & Kurangi Stok</span>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="metric-card d-flex align-items-center">
+                                <div class="p-3 rounded-3 me-3" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                                    <i class="bi bi-exclamation-octagon fs-3"></i>
+                                </div>
+                                <div>
+                                    <p class="text-muted small mb-1">Stok Kritis</p>
+                                    <h3 class="fw-bold m-0">{{ $countKritis ?? 0 }}</h3>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="stat-card">
-                <div class="px-4 py-3 border-b border-secondary bg-white bg-opacity-5 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold m-0"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Antrean Validasi Pengajuan Terbaru</h5>
-                    <span class="badge bg-warning bg-opacity-10 text-warning px-2 py-1 small">Real-time Request</span>
+                    <div class="row g-4 mb-5">
+                        <div class="col-12 col-xl-7">
+                            <div class="stat-card p-4 h-100">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-activity me-2" style="color: #a855f7;"></i>Tren Grafik Pengajuan</h5>
+                                <div style="height: 250px; position: relative;">
+                                    <canvas id="trenChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-5">
+                            <div class="stat-card p-4 h-100">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-diagram-3 me-2 text-info"></i>Konektivitas Jalur Role</h5>
+                                <p class="text-muted small">Sistem ini menghubungkan arus persetujuan logistik terpusat:</p>
+                                <div class="vstack gap-3 mt-4">
+                                    <div class="p-3 rounded-3 border border-secondary bg-dark bg-opacity-40 d-flex align-items-center justify-content-between">
+                                        <span class="small"><i class="bi bi-person me-2 text-info"></i> Karyawan</span>
+                                        <span class="badge bg-info bg-opacity-10 text-info">Input Request</span>
+                                    </div>
+                                    <div class="text-center py-0 my-0"><i class="bi bi-arrow-down text-muted"></i></div>
+                                    <div class="p-3 rounded-3 border bg-dark bg-opacity-40 d-flex align-items-center justify-content-between" style="border-color: rgba(168, 85, 247, 0.4) !important;">
+                                        <span class="small"><i class="bi bi-shield-lock me-2" style="color: #a855f7;"></i> Kepala Umum</span>
+                                        <span class="badge bg-purple bg-opacity-10" style="color: #a855f7; background-color: rgba(168, 85, 247, 0.1)">Validasi & ACC</span>
+                                    </div>
+                                    <div class="text-center py-0 my-0"><i class="bi bi-arrow-down text-muted"></i></div>
+                                    <div class="p-3 rounded-3 border border-secondary bg-dark bg-opacity-40 d-flex align-items-center justify-content-between">
+                                        <span class="small"><i class="bi bi-person-gear me-2 text-success"></i> Admin / Finance</span>
+                                        <span class="badge bg-success bg-opacity-10 text-success">Cetak & Kurangi Stok</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Karyawan</th>
-                                <th>Nama Barang</th>
-                                <th class="text-center">Jumlah</th>
-                                <th>Tanggal Masuk</th>
-                                <th class="text-center">Aksi Operasional</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($pendingPengajuans as $p)
-                            <tr>
-                                <td>
-                                    <span class="fw-bold">{{ $p->user->name ?? 'Karyawan Tanpa Nama' }}</span>
-                                </td>
-                                <td>
-                                    <span class="text-info">{{ $p->barang->nama_barang ?? 'Barang Terhapus' }}</span>
-                                </td>
-                                <td class="text-center fw-bold text-warning">{{ $p->jumlah }}</td>
-                                <td class="text-muted small">
-                                    {{ $p->created_at ? $p->created_at->format('d/m/Y H:i') : '-' }} WIB
-                                </td>
-                                <td class="text-center">
-                                    <form action="{{ route('kepala_umum.pengajuan.setujui', $p->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-success rounded-3 px-3 me-1" onclick="return confirm('Apakah Anda yakin ingin MENYETUJUI pengajuan barang ini?')">
-                                            <i class="bi bi-check-lg"></i> Setujui
-                                        </button>
-                                    </form>
 
-                                    <form action="{{ route('kepala_umum.pengajuan.tolak', $p->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-danger rounded-3 px-3" onclick="return confirm('Apakah Anda yakin ingin MENOLAK pengajuan barang ini?')">
-                                            <i class="bi bi-x"></i> Tolak
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-5 text-muted">
-                                    <i class="bi bi-clipboard-check fs-1 d-block mb-3 opacity-20"></i>
-                                    Bersih! Tidak ada antrean pengajuan yang perlu divalidasi.
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                <div class="tab-pane fade" id="panel-validasi" role="tabpanel">
+                    <div class="stat-card">
+                        <div class="px-4 py-3 border-b border-secondary bg-white bg-opacity-5 d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold m-0"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Antrean Validasi Pengajuan Terbaru</h5>
+                            <span class="badge bg-warning bg-opacity-10 text-warning px-2 py-1 small">Real-time Request</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Karyawan</th>
+                                        <th>Nama Barang</th>
+                                        <th class="text-center">Jumlah</th>
+                                        <th>Tanggal Masuk</th>
+                                        <th class="text-center">Aksi Operasional</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($pendingPengajuans as $p)
+                                    <tr>
+                                        <td><span class="fw-bold">{{ $p->user->name ?? 'Karyawan Tanpa Nama' }}</span></td>
+                                        <td><span class="text-info">{{ $p->barang->nama_barang ?? 'Barang Terhapus' }}</span></td>
+                                        <td class="text-center fw-bold text-warning">{{ $p->jumlah }}</td>
+                                        <td class="text-muted small">{{ $p->created_at ? $p->created_at->format('d/m/Y H:i') : '-' }} WIB</td>
+                                        <td class="text-center">
+                                            <form action="{{ route('kepala_umum.pengajuan.setujui', $p->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-success rounded-3 px-3 me-1" onclick="return confirm('Apakah Anda yakin ingin MENYETUJUI pengajuan barang ini?')">
+                                                    <i class="bi bi-check-lg"></i> Setujui
+                                                </button>
+                                            </form>
+                                            <form action="{{ route('kepala_umum.pengajuan.tolak', $p->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-danger rounded-3 px-3" onclick="return confirm('Apakah Anda yakin ingin MENOLAK pengajuan barang ini?')">
+                                                    <i class="bi bi-x"></i> Tolak
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5 text-muted">
+                                            <i class="bi bi-clipboard-check fs-1 d-block mb-3 opacity-20"></i>
+                                            Bersih! Tidak ada antrean pengajuan yang perlu divalidasi.
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="tab-pane fade" id="panel-logistik" role="tabpanel">
+                    <div class="stat-card p-4">
+                        <h4 class="fw-bold text-transparent bg-clip-text" style="background: linear-gradient(to right, #3b82f6, #00ffcc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 22px;">
+                            <i class="bi bi-graph-up-arrow me-2"></i> Analisis Logistik & Perputaran Gudang
+                        </h4>
+                        <p class="text-muted small">Monitoring kapasitas real-time stok logistik pada database <code>db_inventaris</code>.</p>
+                        <hr class="opacity-10 my-4">
+                        <div class="p-4 rounded-3 text-center text-white-50" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1);">
+                            <i class="bi bi-bar-chart-steps fs-1 d-block mb-3 text-info"></i>
+                            Modul Analitik siap dikonfigurasi grafik tambahannya di sini.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="panel-user" role="tabpanel">
+                    <div class="stat-card p-4">
+                        <h4 class="fw-bold" style="color: #9f7aea;">
+                            <i class="bi bi-people me-2"></i> Kontrol Manajemen Pengguna Sistem
+                        </h4>
+                        <p class="text-muted small">Otoritas pengaturan akun personil (Admin, Finance, Kepala Umum, Karyawan).</p>
+                        <hr class="opacity-10 my-4">
+                        <div class="p-4 rounded-3 text-center text-white-50" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1);">
+                            <i class="bi bi-person-check fs-1 d-block mb-3" style="color: #9f7aea;"></i>
+                            Data pengguna dan pengaturan hak akses role dapat di-looping di area ini.
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <footer class="mt-5 text-center">

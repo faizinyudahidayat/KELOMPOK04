@@ -138,14 +138,20 @@ class AuthController extends Controller
     }
 
     /**
-     * Proses logout user
+     * Proses logout user (Metode GET aman dan stabil)
      */
     public function logout(Request $request)
     {
+        // Proses pembatalan autentikasi user
         Auth::logout();
+
+        // Menghancurkan session lama agar token csrf tidak bentrok di perangkat seluler/laptop
         $request->session()->invalidate();
+
+        // Memperbarui token session untuk mencegah token fiksasi (session fixation)
         $request->session()->regenerateToken();
 
-        return redirect('/login')->with('success', 'Anda telah berhasil keluar.');
+        // Mengarahkan kembali ke route bernama 'login' secara konsisten
+        return redirect()->route('login')->with('success', 'Anda telah berhasil keluar.');
     }
 }
