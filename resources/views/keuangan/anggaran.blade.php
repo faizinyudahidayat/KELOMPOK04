@@ -14,7 +14,7 @@
             font-family: 'Segoe UI', Roboto, sans-serif;
             overflow-x: hidden;
         }
-        /* SIDEBAR STYLING (CYBERPUNK DARK) */
+     
         .cyber-sidebar {
             min-height: 100vh;
             background-color: #111116;

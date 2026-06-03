@@ -61,6 +61,7 @@
                 <li class="{{ Request::is('admin/dashboard') ? 'active' : '' }}"><a href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
                 <li class="{{ Request::is('admin/barang*') ? 'active' : '' }}"><a href="{{ route('admin.barang.index') }}"><i class="bi bi-box-seam me-2"></i> Kelola Barang</a></li>
                 <li class="{{ Request::is('admin/category*') ? 'active' : '' }}"><a href="{{ route('admin.category.index') }}"><i class="bi bi-tags me-2"></i> Kelola Kategori</a></li>
+                <li class="{{ Request::is('admin/users*') ? 'active' : '' }}"><a href="{{ route('admin.users.index') }}"><i class="bi bi-people me-2"></i> Kelola User</a></li>
                 <li class="mt-5"><a href="{{ route('logout') }}" class="text-danger"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
             </ul>
         </nav>
@@ -82,7 +83,7 @@
                     <div class="col-6 col-md-3"><div class="card p-3"><h6>Disetujui</h6><h3>{{ $pengajuanDisetujui }}</h3></div></div>
                 </div>
 
-                <div class="card shadow-sm">
+                <div class="card shadow-sm mb-4">
                     <div class="card-header border-0 d-flex justify-content-between align-items-center">
                         <h5 class="fw-bold mb-0">Data Barang</h5>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahKategori"><i class="bi bi-plus-lg"></i></button>
@@ -104,6 +105,34 @@
                                 @empty
                                 <tr><td colspan="5" class="text-center">Data kosong</td></tr>
                                 @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header border-0">
+                        <h5 class="fw-bold mb-0">Daftar Pengguna</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr><th>Nama</th><th>Email</th><th>Role</th><th>Aksi</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach($users as $user)
+                                <tr>
+                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $user->email }}</td>
+                                    <td><span class="badge bg-info">{{ $user->role }}</span></td>
+                                    <td>
+                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Yakin hapus user ini?')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
