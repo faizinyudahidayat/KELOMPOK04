@@ -35,7 +35,7 @@
                             </td>
                             <td class="py-3" style="min-width: 200px;">
                                 <div class="d-flex align-items-center justify-content-between mb-1">
-                                    @if($b->stok > 10)
+                                    @if($b->stok >= 5)
                                         <span class="text-success small fw-bold">
                                             <i class="bi bi-check-circle-fill me-1"></i> Tersedia
                                         </span>

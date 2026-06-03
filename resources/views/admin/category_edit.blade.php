@@ -277,6 +277,10 @@
                 class="nav-link {{ Request::is('admin/category*') ? 'active' : '' }}">
                 <i class="bi bi-tags-fill"></i> Kelola Kategori
             </a>
+            <a href="{{ route('admin.users.index') }}"
+                class="nav-link {{ Request::is('admin/users*') ? 'active' : '' }}">
+                <i class="bi bi-people"></i> Kelola User
+            </a>
 
             <div class="mt-auto">
                 <hr class="opacity-10" style="border-color: rgba(255,255,255,0.08);">

@@ -169,6 +169,10 @@
                 class="nav-link {{ Request::is('admin/category*') ? 'active' : '' }}">
                 <i class="bi bi-tags-fill"></i> Kelola Kategori
             </a>
+            <a href="{{ route('admin.users.index') }}"
+                class="nav-link {{ Request::is('admin/users*') ? 'active' : '' }}">
+                <i class="bi bi-people"></i> Kelola User
+            </a>
 
             <div class="mt-auto">
                 <hr class="opacity-10" style="border-color: rgba(255,255,255,0.08);">
@@ -195,7 +199,7 @@
                 style="background-color: var(--bg-card);">
                 <div class="container-fluid p-0">
                     <span class="navbar-text fw-semibold text-white">
-                        Sistem Inventaris UNIBA Madura — Kelola Barang
+                        Sistem Inventaris Toko Laptop — Kelola Barang
                     </span>
                     <div class="ms-auto">
                         <span class="badge p-2 px-3 rounded-pill shadow-sm"
@@ -243,7 +247,7 @@
                                                     class="badge badge-kategori rounded-pill px-2 py-1">{{ $row->merk }}</span>
                                             </td>
                                             <td>
-                                                @if ($row->stok <= 5)
+                                                @if ($row->stok < 5)
                                                     <span class="badge rounded-pill px-2 py-1"
                                                         style="background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444;">{{ $row->stok }}</span>
                                                 @else

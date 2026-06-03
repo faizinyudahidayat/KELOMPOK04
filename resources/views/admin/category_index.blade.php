@@ -209,6 +209,10 @@
                 class="nav-link {{ Request::is('admin/category*') ? 'active' : '' }}">
                 <i class="bi bi-tags-fill"></i> Kelola Kategori
             </a>
+            <a href="{{ route('admin.users.index') }}"
+                class="nav-link {{ Request::is('admin/users*') ? 'active' : '' }}">
+                <i class="bi bi-people"></i> Kelola User
+            </a>
 
             {{-- Bagian bawah --}}
             <div class="mt-auto">
@@ -247,7 +251,7 @@
                 style="background-color: var(--bg-card);">
                 <div class="container-fluid p-0">
                     <span class="navbar-text fw-semibold text-white">
-                        Sistem Inventaris UNIBA Madura — Manajemen Kategori
+                        Sistem Inventaris Toko Laptop — Manajemen Kategori
                     </span>
                     <div class="ms-auto">
                         <span class="badge p-2 px-3 rounded-pill shadow-sm"

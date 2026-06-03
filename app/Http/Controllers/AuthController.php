@@ -15,7 +15,6 @@ class AuthController extends Controller
     public function login()
     {
         if (Auth::check()) {
-            // Mengunci pengalihan ke rute yang pas jika user terlanjur login
             $user = Auth::user();
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
@@ -49,7 +48,6 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
-            // SOLUSI UTAMA: Menggunakan redirect()->route() agar tidak terjebak memori 'intended' rute sebelumnya
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard')
                     ->with('success', 'Selamat datang kembali, Admin!');
@@ -64,7 +62,7 @@ class AuthController extends Controller
                     ->with('success', 'Selamat datang Keuangan!');
             }
 
-            // Jalur alternatif jika role tidak dikenali sistem
+            // Role tidak dikenali, arahkan ke halaman utama
             return redirect('/');
         }
 
@@ -74,7 +72,7 @@ class AuthController extends Controller
     }
 
     /**
-     * TAMPILKAN HALAMAN LUPA PASSWORD
+     * Tampilkan halaman lupa password
      */
     public function forgotPassword()
     {
@@ -82,7 +80,7 @@ class AuthController extends Controller
     }
 
     /**
-     * PROSES KIRIM LINK RESET (Sekaligus Redirect ke Form Reset)
+     * Proses kirim link reset (langsung arahkan ke form reset)
      */
     public function sendResetLink(Request $request)
     {
@@ -94,19 +92,17 @@ class AuthController extends Controller
             'email.exists' => 'Email tidak terdaftar dalam sistem.'
         ]);
 
-        // Buat token simulasi sederhana
         $token = bin2hex(random_bytes(20));
 
-        // LANGSUNG ARAHKAN ke halaman input password baru agar user tidak bingung
         return redirect()->route('password.reset', ['token' => $token])
             ->with([
                 'success' => 'Email terverifikasi. Silakan masukkan password baru Anda.',
-                'email' => $request->email // Mengirim email ke halaman berikutnya agar user tidak perlu ngetik ulang
+                'email' => $request->email
             ]);
     }
 
     /**
-     * 1. TAMPILKAN FORM INPUT PASSWORD BARU
+     * Form input password baru
      */
     public function resetPasswordForm($token)
     {
@@ -114,7 +110,7 @@ class AuthController extends Controller
     }
 
     /**
-     * 2. PROSES UPDATE PASSWORD KE DATABASE
+     * Proses update password baru ke database
      */
     public function updatePassword(Request $request)
     {
@@ -128,30 +124,22 @@ class AuthController extends Controller
             'password.confirmed' => 'Konfirmasi password tidak cocok.'
         ]);
 
-        // Cari user berdasarkan email dan update passwordnya
         $user = User::where('email', $request->email)->first();
         $user->password = Hash::make($request->password);
         $user->save();
 
-        // Setelah berhasil, lempar kembali ke LOGIN
         return redirect()->route('login')->with('success', 'Password berhasil diubah. Silakan login dengan password baru.');
     }
 
     /**
-     * Proses logout user (Metode GET aman dan stabil)
+     * Proses logout
      */
     public function logout(Request $request)
     {
-        // Proses pembatalan autentikasi user
         Auth::logout();
-
-        // Menghancurkan session lama agar token csrf tidak bentrok di perangkat seluler/laptop
         $request->session()->invalidate();
-
-        // Memperbarui token session untuk mencegah token fiksasi (session fixation)
         $request->session()->regenerateToken();
 
-        // Mengarahkan kembali ke route bernama 'login' secara konsisten
         return redirect()->route('login')->with('success', 'Anda telah berhasil keluar.');
     }
 }

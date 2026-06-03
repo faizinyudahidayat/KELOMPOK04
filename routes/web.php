@@ -49,10 +49,11 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/category/{id}/update', [AdminController::class, 'category_update'])->name('admin.category.update');
     Route::delete('/category/{id}/delete', [AdminController::class, 'category_destroy'])->name('admin.category.destroy');
 
-    // TAMBAHAN: Rute Manajemen User
+    // Manajemen User
     Route::get('/users', [AdminController::class, 'user_index'])->name('admin.users.index');
-    Route::delete('/users/{id}/delete', [AdminController::class, 'user_destroy'])->name('admin.users.destroy');
     Route::post('/users/store', [AdminController::class, 'user_store'])->name('admin.users.store');
+    Route::put('/users/{id}', [AdminController::class, 'user_update'])->name('admin.users.update'); // <-- TAMBAHAN
+    Route::delete('/users/{id}/delete', [AdminController::class, 'user_destroy'])->name('admin.users.destroy');
 });
 
 /**
@@ -84,4 +85,3 @@ Route::middleware(['auth'])->prefix('keuangan')->group(function () {
     Route::get('/laporan', [KeuanganController::class, 'laporan_index'])->name('keuangan.laporan.index');
     Route::get('/anggaran', [KeuanganController::class, 'anggaran_index'])->name('keuangan.anggaran.index');
 });
-

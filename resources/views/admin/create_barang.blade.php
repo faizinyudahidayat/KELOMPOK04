@@ -168,6 +168,10 @@
                 class="nav-link {{ Request::is('admin/category*') ? 'active' : '' }}">
                 <i class="bi bi-tags-fill"></i> Kelola Kategori
             </a>
+            <a href="{{ route('admin.users.index') }}"
+                class="nav-link {{ Request::is('admin/users*') ? 'active' : '' }}">
+                <i class="bi bi-people"></i> Kelola User
+            </a>
 
             <div class="mt-auto">
                 <hr class="opacity-10" style="border-color: rgba(255,255,255,0.08);">
@@ -228,7 +232,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold" style="color: var(--text-muted);">Kategori</label>
                             <select name="category_id" class="form-select rounded-3" required>
-                                <option value="" selected disabled>-- Pilih Kategori --</option>
+                                <option value="" selected disabled hidden>-- Pilih Kategori --</option>
                                 @foreach ($categories as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->nama_kategori }}</option>
                                 @endforeach

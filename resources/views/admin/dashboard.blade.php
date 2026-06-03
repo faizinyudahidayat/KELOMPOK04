@@ -6,152 +6,349 @@
     <title>Admin Dashboard | Inventaris UNIBA</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg-body: #0f172a;
-            --bg-sidebar: #1e293b;
-            --bg-card: #1e293b;
-            --text-main: #f8fafc;
+            --accent: #3b82f6;
+            --bg: #0f172a;
+            --glass: rgba(30, 41, 59, 0.7);
+            --bg-card: #151e2f;
+            --text-main: #ffffff;
             --text-muted: #94a3b8;
-            --primary-accent: #6366f1;
+            --border-color: rgba(255, 255, 255, 0.1);
         }
 
-        body { background-color: var(--bg-body) !important; color: var(--text-main) !important; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body {
+            background: radial-gradient(circle at top right, #1e293b, var(--bg));
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-        /* Sidebar Styling */
-        #sidebar {
-            min-width: 250px; max-width: 250px; min-height: 100vh;
-            background: var(--bg-sidebar);
+        .sidebar {
+            width: 280px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(15px);
+            height: 100vh;
+            position: fixed;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 1000;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            margin: 5px 15px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-link i {
+            font-size: 1.15rem;
+            margin-right: 14px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(59, 130, 246, 0.12);
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 2.5rem;
             transition: all 0.3s ease-in-out;
-            position: relative; z-index: 1005; border-right: 1px solid #334155;
         }
-        #sidebar .sidebar-header { padding: 20px; background: #0f172a; }
-        #sidebar ul li a { padding: 12px 25px; display: block; color: var(--text-muted); text-decoration: none; transition: 0.3s; }
-        #sidebar ul li a:hover, #sidebar ul li.active > a { color: white; background: #334155; border-left: 4px solid var(--primary-accent); }
 
-        /* Main Content Styling */
-        #content { width: 100%; padding: 20px; transition: all 0.3s ease-in-out; }
-        .card { background-color: var(--bg-card) !important; border: 1px solid #334155 !important; border-radius: 15px; color: white !important; }
-        .navbar { background-color: var(--bg-card) !important; border-bottom: 1px solid #334155; }
-        .table { color: white !important; }
-        .table-light { background-color: #334155 !important; color: var(--text-muted) !important; }
-        .btn-primary { background-color: var(--primary-accent) !important; border: none; }
+        .mobile-nav {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: none;
+        }
 
-        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: none; }
-        .sidebar-overlay.show { display: block; }
+        .card {
+            background-color: var(--bg-card);
+            border: none;
+            border-radius: 12px;
+        }
+
+        /* === ANIMASI UNTUK KARTU STATISTIK === */
+        .stat-card {
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            border: 1px solid transparent;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.04);
+            border-color: var(--accent); /* garis terang biru */
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
+            z-index: 2;
+            position: relative;
+        }
+
+        .table-dark-custom th {
+            color: var(--text-muted) !important;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-color) !important;
+            background-color: transparent !important;
+        }
+
+        .table-dark-custom td {
+            background-color: transparent !important;
+            color: var(--text-main) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            padding: 16px 8px;
+            vertical-align: middle;
+        }
+
+        .table-dark-custom tbody tr:hover td {
+            background-color: rgba(255, 255, 255, 0.02) !important;
+        }
+
+        .badge-kategori {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
         @media (max-width: 768px) {
-            #sidebar { margin-left: -250px; position: fixed; }
-            #sidebar.active { margin-left: 0; }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1.5rem;
+            }
+            .mobile-nav {
+                display: flex;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Mobile Navbar -->
+    <div class="mobile-nav w-100 p-3 justify-content-between align-items-center d-md-none">
+        <h5 class="fw-bold m-0"><i class="bi bi-box-seam-fill text-primary me-2"></i>INV-ADMIN</h5>
+        <button class="btn btn-outline-light btn-sm" id="menuToggle">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+    </div>
 
     <div class="d-flex">
-        <nav id="sidebar">
-            <div class="sidebar-header text-center">
-                <i class="bi bi-shield-lock-fill fs-2 text-primary"></i>
-                <h5 class="mt-2 fw-bold text-white">INV-ADMIN</h5>
-                <small class="text-muted text-uppercase">Kelompok 04</small>
+        <!-- SIDEBAR -->
+        <div class="sidebar d-flex flex-column p-4" id="layoutSidebar">
+            <div class="d-flex align-items-center mb-5 px-2">
+                <div class="p-2 rounded-3 me-3" style="background: rgba(59, 130, 246, 0.1);">
+                    <i class="bi bi-box-seam-fill fs-4" style="color: #3b82f6;"></i>
+                </div>
+                <div>
+                    <h4 class="fw-bold m-0 text-white" style="font-size: 1.2rem; letter-spacing: 1px;">INV-UNIBA</h4>
+                </div>
             </div>
-            <ul class="list-unstyled">
-                <li class="{{ Request::is('admin/dashboard') ? 'active' : '' }}"><a href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
-                <li class="{{ Request::is('admin/barang*') ? 'active' : '' }}"><a href="{{ route('admin.barang.index') }}"><i class="bi bi-box-seam me-2"></i> Kelola Barang</a></li>
-                <li class="{{ Request::is('admin/category*') ? 'active' : '' }}"><a href="{{ route('admin.category.index') }}"><i class="bi bi-tags me-2"></i> Kelola Kategori</a></li>
-                <li class="{{ Request::is('admin/users*') ? 'active' : '' }}"><a href="{{ route('admin.users.index') }}"><i class="bi bi-people me-2"></i> Kelola User</a></li>
-                <li class="mt-5"><a href="{{ route('logout') }}" class="text-danger"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
-            </ul>
-        </nav>
 
-        <div id="content">
-            <nav class="navbar navbar-dark rounded-4 mb-4 shadow-sm">
-                <div class="container-fluid">
-                    <button type="button" id="sidebarCollapse" class="btn btn-primary d-md-none"><i class="bi bi-list"></i></button>
-                    <span class="navbar-text fw-bold">Panel Utama Admin</span>
-                    <span class="badge bg-dark border border-secondary p-2">{{ Auth::user()->name ?? 'Administrator' }}</span>
+            <a href="{{ route('admin.dashboard') }}"
+                class="nav-link {{ Request::is('admin/dashboard') ? 'active' : '' }}">
+                <i class="bi bi-grid-1x2-fill"></i> Dashboard
+            </a>
+            <a href="{{ route('admin.barang.index') }}" class="nav-link">
+                <i class="bi bi-box-seam"></i> Kelola Barang
+            </a>
+            <a href="{{ route('admin.category.index') }}"
+                class="nav-link {{ Request::is('admin/category*') ? 'active' : '' }}">
+                <i class="bi bi-tags-fill"></i> Kelola Kategori
+            </a>
+            <a href="{{ route('admin.users.index') }}"
+                class="nav-link {{ Request::is('admin/users*') ? 'active' : '' }}">
+                <i class="bi bi-people"></i> Kelola User
+            </a>
+
+            <!-- Info user + logout -->
+            <div class="mt-auto">
+                <hr class="opacity-10" style="border-color: rgba(255,255,255,0.08);">
+                <div class="px-2 mb-3 d-flex align-items-center">
+                    <div class="rounded-circle me-3"
+                        style="width: 42px; height: 42px; background: rgba(59, 130, 246, 0.12); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59,130,246,0.15);">
+                        <i class="bi bi-person-fill text-white-50"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="small fw-bold m-0 text-white text-truncate">
+                            {{ Auth::user()->name ?? 'Admin Faizin' }}
+                        </p>
+                        <span class="text-white-50" style="font-size: 0.72rem;">Administrator</span>
+                    </div>
+                </div>
+                <a href="{{ route('logout') }}" class="nav-link text-danger m-0 p-2">
+                    <i class="bi bi-box-arrow-left"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content" id="content">
+            <!-- Navbar Desktop -->
+            <nav class="navbar navbar-expand-lg rounded-3 mb-4 shadow-sm px-3 d-none d-md-block"
+                style="background-color: var(--bg-card);">
+                <div class="container-fluid p-0">
+                    <span class="navbar-text fw-semibold text-white">
+                        Sistem Inventaris Toko Laptop — Dashboard Admin
+                    </span>
+                    <div class="ms-auto">
+                        <span class="badge p-2 px-3 rounded-pill shadow-sm"
+                            style="background-color: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: #fff; font-weight: 500;">
+                            <i class="bi bi-speedometer2 me-1" style="color: #3b82f6;"></i> Panel Utama
+                        </span>
+                    </div>
                 </div>
             </nav>
 
-            <div class="container-fluid">
+            <div class="container-fluid p-0">
+                <!-- Statistik Cards (5 kartu dengan animasi zoom & border terang) -->
                 <div class="row g-3 mb-4">
-                    <div class="col-6 col-md-3"><div class="card p-3"><h6>Total Barang</h6><h3>{{ $totalBarang }}</h3></div></div>
-                    <div class="col-6 col-md-3"><div class="card p-3"><h6>Total Kategori</h6><h3>{{ $totalKategori }}</h3></div></div>
-                    <div class="col-6 col-md-3"><div class="card p-3"><h6>Pengajuan</h6><h3>{{ $totalPengajuan }}</h3></div></div>
-                    <div class="col-6 col-md-3"><div class="card p-3"><h6>Disetujui</h6><h3>{{ $pengajuanDisetujui }}</h3></div></div>
+                    <div class="col-6 col-md">
+                        <div class="card stat-card p-3">
+                            <h6 class="text-white fw-semibold mb-2">Total Barang</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h3 class="fw-bold mb-0 text-white">{{ $totalBarang }}</h3>
+                                <i class="bi bi-box-seam fs-2" style="color: #3b82f6;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md">
+                        <div class="card stat-card p-3">
+                            <h6 class="text-white fw-semibold mb-2">Total Kategori</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h3 class="fw-bold mb-0 text-white">{{ $totalKategori }}</h3>
+                                <i class="bi bi-tags fs-2" style="color: #3b82f6;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md">
+                        <div class="card stat-card p-3">
+                            <h6 class="text-white fw-semibold mb-2">Disetujui</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h3 class="fw-bold mb-0 text-white">{{ $pengajuanDisetujui }}</h3>
+                                <i class="bi bi-check-circle fs-2" style="color: #3b82f6;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Kartu Ditolak -->
+                    <div class="col-6 col-md">
+                        <div class="card stat-card p-3">
+                            <h6 class="text-white fw-semibold mb-2">Ditolak</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h3 class="fw-bold mb-0 text-white">{{ $pengajuanDitolak ?? 0 }}</h3>
+                                <i class="bi bi-x-circle fs-2" style="color: #ef4444;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md">
+                        <div class="card stat-card p-3">
+                            <h6 class="text-white fw-semibold mb-2">Pengajuan</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h3 class="fw-bold mb-0 text-white">{{ $totalPengajuan }}</h3>
+                                <i class="bi bi-send fs-2" style="color: #3b82f6;"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- Tabel Barang Terbaru -->
                 <div class="card shadow-sm mb-4">
-                    <div class="card-header border-0 d-flex justify-content-between align-items-center">
-                        <h5 class="fw-bold mb-0">Data Barang</h5>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahKategori"><i class="bi bi-plus-lg"></i></button>
+                    <div class="card-header bg-transparent py-3 border-bottom"
+                        style="border-color: var(--border-color) !important;">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <h5 class="fw-bold mb-0 text-white">Data Barang Terbaru</h5>
+                            <a href="{{ route('admin.barang.create') }}" class="btn btn-sm btn-primary rounded-pill">
+                                <i class="bi bi-plus-lg me-1"></i> Tambah Barang
+                            </a>
+                        </div>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
-                                <tr><th>No</th><th>Nama</th><th>Merek</th><th>Stok</th><th>Harga</th></tr>
-                            </thead>
-                            <tbody>
-                                @forelse($allBarang as $index => $barang)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $barang->nama_barang }}</td>
-                                    <td>{{ $barang->merk }}</td>
-                                    <td>{{ $barang->stok }}</td>
-                                    <td>Rp {{ number_format($barang->harga, 0, ',', '.') }}</td>
-                                </tr>
-                                @empty
-                                <tr><td colspan="5" class="text-center">Data kosong</td></tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header border-0">
-                        <h5 class="fw-bold mb-0">Daftar Pengguna</h5>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
-                                <tr><th>Nama</th><th>Email</th><th>Role</th><th>Aksi</th></tr>
-                            </thead>
-                            <tbody>
-                                @foreach($users as $user)
-                                <tr>
-                                    <td>{{ $user->name }}</td>
-                                    <td>{{ $user->email }}</td>
-                                    <td><span class="badge bg-info">{{ $user->role }}</span></td>
-                                    <td>
-                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Yakin hapus user ini?')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-dark-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">No</th>
+                                        <th>Nama Barang</th>
+                                        <th>Merek</th>
+                                        <th>Stok</th>
+                                        <th class="pe-4 text-end">Harga</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($allBarang as $key => $row)
+                                        <tr>
+                                            <td class="ps-4" style="color: var(--text-muted);">{{ $key + 1 }}</td>
+                                            <td class="fw-semibold text-white">{{ $row->nama_barang }}</td>
+                                            <td><span class="badge badge-kategori rounded-pill px-2 py-1">{{ $row->merk }}</span></td>
+                                            <td>
+                                                @if ($row->stok <= 5)
+                                                    <span class="badge rounded-pill px-2 py-1"
+                                                        style="background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444;">{{ $row->stok }}</span>
+                                                @else
+                                                    <span class="badge rounded-pill px-2 py-1"
+                                                        style="background-color: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid #22c55e;">{{ $row->stok }}</span>
+                                                @endif
+                                            </td>
+                                            <td class="pe-4 text-end fw-bold" style="color: #38bdf8;">
+                                                Rp {{ number_format($row->harga, 0, ',', '.') }}
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center py-5" style="color: var(--text-muted);">
+                                                <i class="bi bi-inbox fs-2 d-block mb-2 opacity-50"></i>
+                                                Belum ada data barang terdaftar.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
+                <!-- Tabel daftar pengguna telah dihapus -->
             </div>
         </div>
     </div>
 
+    <!-- Modal Tambah Kategori (tetap disertakan) -->
     <div class="modal fade" id="modalTambahKategori" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="background: #1e293b;">
+            <div class="modal-content" style="background: #1e293b; border: 1px solid var(--border-color);">
                 <form action="{{ route('admin.category.store') }}" method="POST">
                     @csrf
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title text-white">Tambah Kategori</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
                     <div class="modal-body">
-                        <label class="form-label">Nama Kategori</label>
-                        <input type="text" name="nama_kategori" class="form-control" required minlength="3" maxlength="50">
+                        <label class="form-label" style="color:white;">Nama Kategori</label>
+                        <input type="text" name="nama_kategori" class="form-control" required minlength="3" maxlength="50"
+                               style="background: #0f172a; color: white; border: 1px solid var(--border-color);">
                     </div>
                     <div class="modal-footer border-0">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="submit" class="btn btn-primary rounded-pill">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -160,9 +357,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const s = document.getElementById('sidebar'), c = document.getElementById('sidebarCollapse'), o = document.getElementById('sidebarOverlay');
-        c.addEventListener('click', () => { s.classList.toggle('active'); o.classList.toggle('show'); });
-        o.addEventListener('click', () => { s.classList.remove('active'); o.classList.remove('show'); });
+        const menuToggle = document.getElementById('menuToggle');
+        const layoutSidebar = document.getElementById('layoutSidebar');
+
+        if (menuToggle && layoutSidebar) {
+            menuToggle.addEventListener('click', function() {
+                layoutSidebar.classList.toggle('active');
+            });
+        }
     </script>
 </body>
 </html>

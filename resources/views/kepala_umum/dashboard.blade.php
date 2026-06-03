@@ -37,6 +37,7 @@
             color: var(--text-readable-muted) !important;
         }
 
+        /* Sidebar */
         .sidebar {
             width: 280px;
             background: var(--sidebar-bg);
@@ -91,6 +92,7 @@
             display: none;
         }
 
+        /* Kartu metrik */
         .metric-card {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
@@ -160,6 +162,48 @@
             color: #ffffff !important;
         }
 
+        /* Tombol aksi seragam */
+        .btn-validasi {
+            min-width: 95px;
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        /* Filter Select */
+        .select-filter {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: #f8fafc;
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            outline: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            min-width: 140px;
+        }
+
+        .select-filter:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+        }
+
+        .select-filter option {
+            background: #0f1a2f;
+            color: #f8fafc;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 992px) {
+            .main-content {
+                padding: 2rem;
+            }
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -167,6 +211,7 @@
 
             .sidebar.active {
                 transform: translateX(0);
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
             }
 
             .main-content {
@@ -178,8 +223,130 @@
             .mobile-nav {
                 display: flex;
             }
+
+            .metric-card {
+                padding: 1rem;
+            }
+
+            .metric-card h3 {
+                font-size: 1.5rem;
+            }
+
+            .card-header-dark {
+                padding: 1rem;
+            }
+
+            .table-custom thead th,
+            .table-custom tbody td {
+                padding: 0.8rem 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            .table-custom thead th {
+                font-size: 0.7rem;
+                letter-spacing: 0.5px;
+            }
+
+            .btn-validasi {
+                min-width: 80px;
+                padding: 0.35rem 0.6rem;
+                font-size: 0.75rem;
+            }
+
+            .chart-container {
+                height: 200px !important;
+            }
+
+            .select-filter {
+                min-width: 120px;
+                font-size: 0.75rem;
+                padding: 0.3rem 0.8rem;
+            }
         }
 
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .btn-validasi {
+                min-width: 70px;
+                padding: 0.3rem 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            .btn-validasi i {
+                font-size: 0.8rem;
+            }
+
+            .metric-card {
+                padding: 0.8rem;
+            }
+
+            .metric-card i {
+                font-size: 1.8rem;
+            }
+
+            .metric-card h3 {
+                font-size: 1.3rem;
+            }
+
+            .table-custom thead th {
+                font-size: 0.65rem;
+                padding: 0.6rem 0.4rem;
+            }
+
+            .table-custom tbody td {
+                padding: 0.6rem 0.4rem;
+                font-size: 0.7rem;
+            }
+
+            h2.fw-bold {
+                font-size: 1.4rem !important;
+            }
+
+            .select-filter {
+                min-width: 100px;
+                font-size: 0.7rem;
+                padding: 0.25rem 0.6rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .metric-card {
+                padding: 0.7rem;
+            }
+
+            .metric-card i {
+                font-size: 1.5rem;
+            }
+
+            .metric-card h3 {
+                font-size: 1.2rem;
+            }
+
+            .table-custom thead th {
+                font-size: 0.6rem;
+                padding: 0.5rem 0.3rem;
+            }
+
+            .table-custom tbody td {
+                padding: 0.5rem 0.3rem;
+                font-size: 0.65rem;
+            }
+
+            .btn-validasi {
+                min-width: 65px;
+                padding: 0.25rem 0.4rem;
+                font-size: 0.65rem;
+            }
+
+            .badge {
+                font-size: 0.65rem;
+            }
+        }
+
+        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -207,6 +374,11 @@
         <button class="btn btn-outline-light btn-sm" id="menuToggle">
             <i class="bi bi-list fs-4"></i>
         </button>
+    </div>
+
+    <!-- Overlay -->
+    <div id="sidebarOverlay"
+        style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index:1009;">
     </div>
 
     <!-- Sidebar -->
@@ -259,7 +431,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <div class="main-content" id="mainContent">
         <div class="container-fluid">
 
             <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -316,11 +488,11 @@
                             <div class="metric-card d-flex align-items-center">
                                 <div class="p-3 rounded-3 me-3"
                                     style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-                                    <i class="bi bi-box-seam fs-3"></i>
+                                    <i class="bi bi-folder-fill fs-3"></i>
                                 </div>
                                 <div>
-                                    <p class="text-muted small mb-1">Total Item</p>
-                                    <h3 class="fw-bold m-0">{{ $countBarang ?? 0 }}</h3>
+                                    <p class="text-muted small mb-1">Total Pengajuan</p>
+                                    <h3 class="fw-bold m-0">{{ $semuaPengajuans->count() ?? 0 }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -343,7 +515,7 @@
                             <div class="stat-card p-4 h-100">
                                 <h5 class="fw-bold mb-3"><i class="bi bi-activity me-2"
                                         style="color: #3b82f6;"></i>Tren Grafik Pengajuan</h5>
-                                <div style="height: 250px; position: relative;">
+                                <div class="chart-container" style="height: 250px; position: relative;">
                                     <canvas id="trenChart"></canvas>
                                 </div>
                             </div>
@@ -403,8 +575,9 @@
                                         <th>Karyawan</th>
                                         <th>Nama Barang</th>
                                         <th class="text-center">Jumlah</th>
-                                        <th>Tanggal Masuk</th>
-                                        <th class="text-center">Aksi Operasional</th>
+                                        <th class="text-center">Alasan Pengajuan</th>
+                                        <th class="text-center">Tanggal Masuk</th>
+                                        <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -417,33 +590,37 @@
                                                     class="text-info font-monospace">{{ $p->barang->nama_barang ?? 'Barang Terhapus' }}</span>
                                             </td>
                                             <td class="text-center fw-bold text-warning">{{ $p->jumlah }}</td>
-                                            <td class="text-muted small">
-                                                {{ $p->created_at ? $p->created_at->format('d/m/Y H:i') : '-' }} WIB
+                                            <td class="text-center">{{ $p->alasan ?? '-' }}</td>
+                                            <td class="text-center text-muted small">
+                                                {{ $p->created_at ? $p->created_at->format('d/m/Y H:i') : '-' }}
                                             </td>
                                             <td class="text-center">
-                                                <form action="{{ route('kepala_umum.pengajuan.setujui', $p->id) }}"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    <button type="submit"
-                                                        class="btn btn-sm btn-success rounded-3 px-3 me-1"
-                                                        onclick="return confirm('Setujui pengajuan ini?')">
-                                                        <i class="bi bi-check-lg"></i> Setujui
-                                                    </button>
-                                                </form>
-                                                <form action="{{ route('kepala_umum.pengajuan.tolak', $p->id) }}"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    <button type="submit"
-                                                        class="btn btn-sm btn-danger rounded-3 px-3"
-                                                        onclick="return confirm('Tolak pengajuan ini?')">
-                                                        <i class="bi bi-x"></i> Tolak
-                                                    </button>
-                                                </form>
+                                                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                                    <form
+                                                        action="{{ route('kepala_umum.pengajuan.setujui', $p->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        <button type="submit"
+                                                            class="btn btn-sm btn-success rounded-3 btn-validasi"
+                                                            onclick="return confirm('Setujui pengajuan ini?')">
+                                                            <i class="bi bi-check-lg"></i> Setujui
+                                                        </button>
+                                                    </form>
+                                                    <form action="{{ route('kepala_umum.pengajuan.tolak', $p->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        <button type="submit"
+                                                            class="btn btn-sm btn-danger rounded-3 btn-validasi"
+                                                            onclick="return confirm('Tolak pengajuan ini?')">
+                                                            <i class="bi bi-x"></i> Tolak
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center py-5 text-muted">
+                                            <td colspan="6" class="text-center py-5 text-muted">
                                                 <i class="bi bi-clipboard-check fs-1 d-block mb-3 opacity-20"></i>
                                                 Tidak ada antrean validasi.
                                             </td>
@@ -455,18 +632,23 @@
                     </div>
                 </div>
 
-                <!-- ========== PANEL ANALISIS LOGISTIK ========== -->
+                <!-- ========== PANEL ANALISIS LOGISTIK (FILTER SELECT) ========== -->
                 <div class="tab-pane fade" id="panel-logistik" role="tabpanel">
                     <div class="stat-card">
-                        <div class="card-header-dark d-flex justify-content-between align-items-center">
+                        <div
+                            class="card-header-dark d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <h5 class="fw-bold m-0">
                                 <i class="bi bi-graph-up-arrow me-2" style="color: #3b82f6;"></i>Rekap Status
                                 Pengajuan Barang
                             </h5>
-                            <span class="badge bg-info bg-opacity-10 text-info px-2 py-1 small">Semua Status</span>
+                            <select class="select-filter" id="filterLogistik">
+                                <option value="all" selected>Semua Status</option>
+                                <option value="verifikasi">Disetujui</option>
+                                <option value="ditolak">Ditolak</option>
+                            </select>
                         </div>
                         <div class="table-responsive table-custom-responsive">
-                            <table class="table table-custom table-hover">
+                            <table class="table table-custom table-hover" id="tableLogistik">
                                 <thead>
                                     <tr>
                                         <th>Nama Barang</th>
@@ -474,14 +656,13 @@
                                         <th>Karyawan</th>
                                         <th>Status</th>
                                         <th>Tanggal Pengajuan</th>
-                                        <th>Keterangan</th>
+                                        <th>Alasan Pengajuan</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($semuaPengajuans as $item)
                                         @php
                                             $status = $item->status;
-                                            // Ubah status 'verifikasi' menjadi 'Disetujui' di tampilan
                                             if ($status == 'verifikasi') {
                                                 $statusLabel = 'Disetujui';
                                                 $badgeClass = 'bg-success bg-opacity-10 text-success';
@@ -494,7 +675,7 @@
                                                 };
                                             }
                                         @endphp
-                                        <tr>
+                                        <tr data-status="{{ $item->status }}">
                                             <td><span
                                                     class="fw-bold text-white">{{ $item->barang->nama_barang ?? 'Barang Terhapus' }}</span>
                                             </td>
@@ -506,10 +687,10 @@
                                             <td class="text-muted small">
                                                 {{ $item->created_at ? $item->created_at->format('d/m/Y H:i') : '-' }}
                                             </td>
-                                            <td class="text-muted small">{{ $item->keterangan ?? '-' }}</td>
+                                            <td class="text-muted small">{{ $item->alasan ?? '-' }}</td>
                                         </tr>
                                     @empty
-                                        <tr>
+                                        <tr data-status="none">
                                             <td colspan="6" class="text-center py-5 text-muted">
                                                 <i class="bi bi-inbox fs-1 d-block mb-3 opacity-20"></i>
                                                 Belum ada data pengajuan.
@@ -520,8 +701,8 @@
                             </table>
                         </div>
                     </div>
-                    <p class="text-muted small mt-3"><i class="bi bi-info-circle me-1"></i> Tabel ini menampilkan
-                        seluruh pengajuan barang yang sudah tercatat di sistem.</p>
+                    <p class="text-muted small mt-3"><i class="bi bi-info-circle me-1"></i> Gunakan filter di atas
+                        untuk menampilkan pengajuan sesuai status.</p>
                 </div>
 
                 <!-- ========== PANEL MANAJEMEN USER ========== -->
@@ -602,14 +783,37 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // --- Sidebar mobile toggle ---
         const menuToggle = document.getElementById('menuToggle');
         const layoutSidebar = document.getElementById('layoutSidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const mainContent = document.getElementById('mainContent');
+
+        function openSidebar() {
+            layoutSidebar.classList.add('active');
+            sidebarOverlay.style.display = 'block';
+        }
+
+        function closeSidebar() {
+            layoutSidebar.classList.remove('active');
+            sidebarOverlay.style.display = 'none';
+        }
+
         if (menuToggle && layoutSidebar) {
-            menuToggle.addEventListener('click', function() {
-                layoutSidebar.classList.toggle('active');
+            menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                layoutSidebar.classList.contains('active') ? closeSidebar() : openSidebar();
             });
         }
 
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+        if (mainContent) {
+            mainContent.addEventListener('click', function(e) {
+                if (layoutSidebar.classList.contains('active')) closeSidebar();
+            });
+        }
+
+        // --- Grafik ---
         const ctx = document.getElementById('trenChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
@@ -651,6 +855,26 @@
                         }
                     }
                 }
+            }
+        });
+
+        // --- Filter Analisis Logistik (select) ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterSelect = document.getElementById('filterLogistik');
+            const tableRows = document.querySelectorAll('#tableLogistik tbody tr[data-status]');
+
+            if (filterSelect) {
+                filterSelect.addEventListener('change', function() {
+                    const filterValue = this.value;
+                    tableRows.forEach(row => {
+                        const status = row.getAttribute('data-status');
+                        if (filterValue === 'all' || status === filterValue) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
             }
         });
     </script>

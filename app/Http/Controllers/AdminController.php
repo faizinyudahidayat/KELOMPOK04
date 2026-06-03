@@ -6,31 +6,29 @@ use Illuminate\Http\Request;
 use App\Models\Barang;
 use App\Models\Category;
 use App\Models\Pengajuan;
-use App\Models\User; // DITAMBAHKAN
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
     /**
-     * Menampilkan Dashboard Utama Admin
+     * Dashboard Admin
      */
     public function index()
     {
-        // PROTEKSI KEAMANAN
         if (Auth::user()->role !== 'admin') {
             abort(403, 'Akses Ditolak! Panel ini hanya untuk Admin.');
         }
 
-        // Kueri bawaan
-        $totalBarang = Barang::count();
-        $totalKategori = Category::count();
-        $allBarang = Barang::with('category')->latest()->take(5)->get();
-        $users = User::all(); // Mengambil data user untuk dashboard
+        $totalBarang        = Barang::count();
+        $totalKategori      = Category::count();
+        $allBarang          = Barang::with('category')->latest()->take(5)->get();
+        $users              = User::all();
 
         $totalPengajuan     = Pengajuan::count() ?? 0;
         $pengajuanPending   = Pengajuan::where('status', 'pending')->count() ?? 0;
         $pengajuanDisetujui = Pengajuan::where('status', 'verifikasi')->count() ?? 0;
-        $pengajuanDitolak  = Pengajuan::where('status', 'ditolak')->count() ?? 0;
+        $pengajuanDitolak   = Pengajuan::where('status', 'ditolak')->count() ?? 0;
 
         return view('admin.dashboard', compact(
             'totalBarang', 'totalKategori', 'allBarang',
@@ -39,8 +37,7 @@ class AdminController extends Controller
         ));
     }
 
-
-   // --- FITUR MANAJEMEN USER ---
+    // ===================== MANAJEMEN USER =====================
 
     public function user_index()
     {
@@ -48,20 +45,6 @@ class AdminController extends Controller
         return view('admin.users_index', compact('users'));
     }
 
-    public function user_destroy($id)
-    {
-        $user = User::findOrFail($id);
-
-        // Mencegah admin menghapus akunnya sendiri
-        if ($user->id === Auth::id()) {
-            return redirect()->back()->with('error', 'Anda tidak dapat menghapus akun sendiri!');
-        }
-
-        $user->delete();
-        return redirect()->back()->with('success', 'User berhasil dihapus!');
-    }
-
-    // Tambahkan metode baru ini di sini:
     public function user_store(Request $request)
     {
         $request->validate([
@@ -81,7 +64,45 @@ class AdminController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'User baru berhasil ditambahkan!');
     }
 
-    // --- FITUR BARANG (KODE ANDA TETAP SAMA) ---
+    public function user_update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'role'  => 'required|in:admin,karyawan,kepala-umum,keuangan',
+            'password' => 'nullable|string|min:6',
+        ]);
+
+        $data = [
+            'name'  => $request->name,
+            'email' => $request->email,
+            'role'  => $request->role,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = bcrypt($request->password);
+        }
+
+        $user->update($data);
+
+        return redirect()->route('admin.users.index')->with('success', 'Data user berhasil diperbarui!');
+    }
+
+    public function user_destroy($id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->id === Auth::id()) {
+            return redirect()->back()->with('error', 'Anda tidak dapat menghapus akun sendiri!');
+        }
+
+        $user->delete();
+        return redirect()->back()->with('success', 'User berhasil dihapus!');
+    }
+
+    // ===================== FITUR BARANG =====================
 
     public function barang_index()
     {
@@ -156,13 +177,12 @@ class AdminController extends Controller
         return redirect()->route('admin.barang.index')->with('success', 'Barang berhasil dihapus!');
     }
 
-    // --- FITUR KATEGORI (KODE ANDA TETAP SAMA) ---
+    // ===================== FITUR KATEGORI =====================
 
     public function category_index()
     {
         $categories = Category::all();
         $totalCategory = $categories->count();
-
         return view('admin.category_index', compact('categories', 'totalCategory'));
     }
 
@@ -205,5 +225,4 @@ class AdminController extends Controller
         $category->delete();
         return redirect()->route('admin.category.index')->with('success', 'Kategori berhasil dihapus!');
     }
-
 }
